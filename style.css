@@ -1,0 +1,620 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body, html {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #000;
+}
+
+.landing-container {
+    width: 100%;
+    height: 100vh;
+    background-image: url('Asset/images/background.png');
+    background-size: cover;
+    background-position: center bottom; /* background image seems to rest on bottom */
+    background-repeat: no-repeat;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+#story-page {
+    width: 100%;
+    height: 100vh;
+    background-image: url('Asset/images/background\ 2.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+#map-page {
+    width: 100%;
+    height: 100vh;
+    background-image: url('Asset/images/bg.svg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    position: relative;
+}
+
+.content-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Space between title and button */
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+    padding: 8% 20px 10% 20px; /* Padding for top and bottom spacing */
+    max-width: 1200px; /* Limit max width */
+}
+
+/* Animasi untuk judul */
+.judul-animasi {
+    width: 100%;
+    max-width: 650px;
+    height: auto;
+    filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5));
+    animation: float 4s ease-in-out infinite;
+    margin-top: 2%; /* Extra adjustment if needed */
+}
+
+/* Animasi melayang (floating) untuk judul */
+@keyframes float {
+    0% {
+        transform: translateY(0px) rotate(0deg) scale(1);
+    }
+    50% {
+        transform: translateY(-15px) rotate(2deg) scale(1.02);
+    }
+    100% {
+        transform: translateY(0px) rotate(0deg) scale(1);
+    }
+}
+
+/* Styling dan interaksi untuk tombol mulai */
+.btn-mulai {
+    display: inline-block;
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), filter 0.3s;
+    cursor: pointer;
+    margin-bottom: 2%;
+}
+
+.btn-mulai img {
+    width: 100%;
+    max-width: 220px;
+    height: auto;
+    filter: drop-shadow(0 5px 15px rgba(0,0,0,0.6));
+}
+
+.btn-mulai:hover {
+    transform: scale(1.1);
+    filter: brightness(1.1);
+}
+
+.btn-mulai:active {
+    transform: scale(0.95);
+}
+
+/* Media Queries untuk gadget yang lebih kecil */
+@media (max-width: 768px) {
+    .judul-animasi {
+        max-width: 450px;
+    }
+    
+    .btn-mulai img {
+        max-width: 200px;
+    }
+    
+    .content-wrapper {
+        gap: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .judul-animasi {
+        max-width: 300px;
+    }
+    
+    .btn-mulai img {
+        max-width: 160px;
+    }
+    
+    .content-wrapper {
+        padding: 5% 10px 10% 10px;
+    }
+}
+
+/* Header (Logo & Controls) */
+.top-header {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    right: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    z-index: 100;
+}
+
+.logo-kiri img {
+    height: 70px;
+    width: auto;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+}
+
+.kontrol-kanan {
+    display: flex;
+    gap: 15px;
+}
+
+.kontrol-btn {
+    background: transparent;
+    border: none;
+    padding: 0;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+.kontrol-btn img {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+}
+
+.kontrol-btn:hover {
+    transform: scale(1.1);
+    filter: brightness(1.1);
+}
+
+/* Landscape Warning Overlay */
+.landscape-warning {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #333;
+    color: white;
+    z-index: 9999;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 20px;
+}
+
+.warning-content p {
+    font-size: 1.5rem;
+    line-height: 1.5;
+}
+
+@media screen and (orientation: portrait) and (max-width: 768px) {
+    .landscape-warning {
+        display: flex;
+    }
+}
+
+/* Popup Overlay */
+.popup-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+
+.popup-overlay.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.popup-box {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    transform: scale(1);
+    transition: transform 0.3s ease;
+}
+
+.popup-overlay.hidden .popup-box {
+    transform: scale(0.8);
+}
+
+.popup-box h2 {
+    color: #f26522; /* Warna ceria khas game */
+    margin-bottom: 10px;
+}
+
+.popup-box p {
+    color: #333;
+    margin-bottom: 25px;
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+.popup-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.btn-popup {
+    padding: 10px 30px;
+    border: none;
+    border-radius: 25px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.2s, filter 0.2s;
+}
+
+.btn-popup:hover {
+    transform: scale(1.05);
+    filter: brightness(1.1);
+}
+
+.btn-ya {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.btn-tidak {
+    background-color: #f44336;
+    color: white;
+}
+
+/* --- HALAMAN GAME (PAGE 2) --- */
+.game-container {
+    width: 100%;
+    height: 100vh;
+    background-image: url('Asset/images/background 2.png');
+    background-size: cover;
+    background-position: center bottom;
+    background-repeat: no-repeat;
+    position: relative;
+}
+
+/* Hidden state global */
+.hidden {
+    display: none !important;
+}
+
+/* Cerita Overlay & Popup */
+.cerita-overlay {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.4);
+    z-index: 50;
+}
+
+.cerita-popup {
+    background-image: url('Asset/images/Pop\ Up.png');
+    background-size: 100% 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    width: 65%;
+    max-width: 850px;
+    aspect-ratio: 2/1; /* Sesuaikan rasio gambar Pop Up */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 5% 10%;
+    box-sizing: border-box;
+    margin-left: 10%; /* Geser ke kanan sedikit agar tidak tertutup penuh karakter */
+}
+
+.karakter-kiri {
+    position: absolute;
+    left: 2%;
+    bottom: 0; /* Menempel ke bawah layar */
+    height: 75%; /* Ukuran disesuaikan tinggi layar */
+    max-height: 600px;
+    width: auto;
+    z-index: 60; /* Di atas frame kayu */
+    filter: drop-shadow(0 5px 15px rgba(0,0,0,0.5));
+    pointer-events: none;
+}
+
+.cerita-content {
+    width: 100%;
+    max-height: 100%;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#cerita-title {
+    font-family: 'Nunito', sans-serif;
+    color: #f26522;
+    margin-bottom: 10px;
+    font-size: 2vw;
+    text-align: center;
+    font-weight: 800;
+}
+
+#cerita-text {
+    font-family: 'Nunito', sans-serif;
+    font-size: 1.4vw; /* Responsive font size */
+    line-height: 1.5;
+    color: #4a3424; /* Warna coklat tua, biasanya cocok untuk papan/popup kayu */
+    text-align: center;
+    font-weight: 700;
+}
+
+@media (max-width: 768px) {
+    .cerita-popup {
+        width: 90%;
+        padding: 8% 12%;
+    }
+    #cerita-title {
+        font-size: 4vw;
+    }
+    #cerita-text {
+        font-size: 3vw;
+    }
+    .btn-mulai-petualangan {
+        font-size: 3.5vw;
+        padding: 8px 25px;
+    }
+}
+
+.btn-mulai-petualangan {
+    background: linear-gradient(to bottom, #f28222, #d4501a);
+    color: white;
+    font-family: 'Nunito', sans-serif;
+    font-size: 1.8vw;
+    font-weight: bold;
+    padding: 10px 40px;
+    border: 3px solid #8b2c00;
+    border-radius: 20px;
+    box-shadow: 0 4px 0 #8b2c00, 0 8px 15px rgba(0,0,0,0.5);
+    cursor: pointer;
+    margin-top: 2%; /* Memberi jarak dengan popup */
+    transition: transform 0.1s, box-shadow 0.1s, filter 0.2s;
+    z-index: 60;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+}
+
+.btn-mulai-petualangan:active {
+    transform: translateY(4px);
+    box-shadow: 0 0px 0 #8b2c00, 0 2px 5px rgba(0,0,0,0.5);
+}
+
+.btn-mulai-petualangan:hover {
+    filter: brightness(1.1);
+}
+
+/* --- MAP INTERAKTIF --- */
+#map-wrap {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    overflow: hidden;
+    touch-action: none; /* Penting untuk gesture pan/zoom di mobile */
+    cursor: grab;
+    background: transparent;
+    z-index: 10; /* Di bawah cerita-overlay (50) */
+}
+
+#map-wrap.dragging {
+    cursor: grabbing;
+}
+
+#map-wrap svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    user-select: none;
+    -webkit-user-select: none;
+    transform-origin: 0 0; /* Default transform origin */
+}
+
+.map-clickable {
+    cursor: pointer;
+    pointer-events: all;
+    transition: filter 0.2s;
+}
+
+.map-clickable:hover {
+    filter: brightness(1.2) drop-shadow(0 0 5px rgba(255,255,255,0.8));
+}
+
+.map-clickable.selected {
+    filter: brightness(1.3) drop-shadow(0 0 10px rgba(255,255,255,1));
+}
+
+/* --- ASSET EDITOR --- */
+#map-inner-wrap {
+    position: absolute;
+    top: 0; left: 0;
+    width: 2000px;
+    height: 1000px;
+    transform-origin: 0 0;
+}
+
+#assets-container {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+}
+
+.draggable-asset {
+    position: absolute;
+    pointer-events: all;
+    cursor: move;
+    border: 1px dashed transparent;
+    transition: filter 0.1s;
+}
+
+.draggable-asset:hover {
+    border: 1px dashed #e74c3c;
+    filter: brightness(1.2);
+}
+
+/* --- HUD (Heads Up Display) --- */
+.hud-container {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    right: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end; /* Supaya elemen HUD sejajar di bawah */
+    z-index: 100;
+    pointer-events: none; /* Let clicks pass through to map */
+}
+
+.hud-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.hud-nyawa img {
+    width: 40px;
+    height: 40px;
+}
+
+.hud-skor {
+    position: relative;
+}
+
+.hud-skor img {
+    height: 60px;
+}
+
+.hud-skor #text-skor {
+    position: absolute;
+    right: 35px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+}
+
+/* --- ANIMASI IKON MUNCUL --- */
+.muncul-animasi {
+    animation: popOut 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    transform-origin: bottom center;
+}
+
+@keyframes popOut {
+    0% { transform: scale(0) translateY(20px); opacity: 0; }
+    100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+/* --- ENDING PAGE --- */
+#ending-page {
+    background-image: url('Asset/images/ending.png');
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.ending-content {
+    background: rgba(255, 255, 255, 0.9);
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    text-align: center;
+    max-width: 600px;
+    width: 90%;
+}
+
+.ending-content h2 {
+    color: #d35400;
+    margin-bottom: 10px;
+}
+
+.ending-content p {
+    font-size: 18px;
+    margin-bottom: 20px;
+}
+
+.refleksi-box {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.refleksi-box label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: bold;
+    color: #444;
+}
+
+.refleksi-box textarea {
+    width: 100%;
+    padding: 15px;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    font-size: 16px;
+    resize: vertical;
+    font-family: inherit;
+}
+
+.ending-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.btn-ending {
+    padding: 12px 30px;
+    font-size: 18px;
+    font-weight: bold;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: transform 0.2s, opacity 0.2s;
+}
+
+#btn-main-lagi {
+    background-color: #27ae60;
+    color: white;
+}
+
+#btn-keluar {
+    background-color: #c0392b;
+    color: white;
+}
+
+.btn-ending.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.btn-ending:not(.disabled):hover {
+    transform: scale(1.05);
+}
+

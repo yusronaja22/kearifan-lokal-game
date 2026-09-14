@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kearifan Lokal - Landing Page</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Overlay Putar Perangkat (Portrait to Landscape) -->
+    <div id="landscape-warning" class="landscape-warning">
+        <div class="warning-content">
+            <p>Silakan putar perangkat Anda ke mode Mendatar (Landscape) untuk bermain.</p>
+        </div>
+    </div>
+
+    <!-- Header: Logo Kiri & Kontrol Kanan (Persist on all pages) -->
+    <div class="top-header">
+        <div class="logo-kiri">
+            <img src="Asset/images/Logo-Kemendikdasmen.svg" alt="Logo Kemendikdasmen">
+        </div>
+        <div class="kontrol-kanan">
+            <button id="btn-music" class="kontrol-btn">
+                <img src="Asset/images/music-on.svg" alt="Music On" id="music-icon">
+            </button>
+            <button id="btn-fullscreen-toggle" class="kontrol-btn">
+                <img src="Asset/images/fullscreen.svg" alt="Fullscreen">
+            </button>
+        </div>
+    </div>
+
+    <div id="landing-page" class="landing-container">
+        <div class="content-wrapper">
+            <img src="Asset/images/judul.svg" alt="Judul Game" class="judul-animasi">
+            <a href="#" class="btn-mulai">
+                <img src="Asset/images/mulai.svg" alt="Mulai">
+            </a>
+        </div>
+    </div>
+
+    <!-- Halaman Cerita (Page 2) -->
+    <div id="story-page" class="game-container hidden">
+        <div class="cerita-overlay" id="cerita-overlay">
+            <img id="cerita-karakter" class="karakter-kiri" src="Asset/images/pop-toraja.png" alt="Karakter Toraja">
+            
+            <div class="cerita-popup">
+                <div class="cerita-content">
+                    <h2 id="cerita-title" class="hidden">Panduan Permainan</h2>
+                    <p id="cerita-text"></p>
+                </div>
+            </div>
+            <button id="btn-mulai-petualangan" class="btn-mulai-petualangan">Mulai Petualangan</button>
+        </div>
+    </div>
+
+    <!-- Halaman Game Utama (Page 3) -->
+    <div id="map-page" class="game-container hidden">
+        <!-- HUD (Heads Up Display) -->
+        <div id="hud-top" class="hud-container">
+            <div id="hud-nyawa" class="hud-item hud-nyawa">
+                <!-- Nyawa diisi via JS -->
+            </div>
+            <div id="hud-skor" class="hud-item hud-skor">
+                <img src="Asset/images/wadah-ketemu.svg" alt="Skor">
+                <span id="text-skor">0 / 6</span>
+            </div>
+        </div>
+
+        <div id="map-wrap"></div>
+        
+        <!-- Audio Game -->
+        <audio id="audio-sfx-correct" src="Asset/audio/correct.mp3"></audio>
+        <audio id="audio-sfx-wrong" src="Asset/audio/wrong.mp3"></audio>
+        <audio id="audio-sfx-notif" src="Asset/audio/notif_soal.wav"></audio>
+        <audio id="audio-bgm-game" src="Asset/audio/Roma Comedy.wav" loop></audio>
+        <audio id="audio-bgm-win" src="Asset/audio/Winning.mp3"></audio>
+        <audio id="audio-soal"></audio> <!-- Source diset dinamis via JS -->
+        <audio id="audio-benar"></audio> <!-- Source diset dinamis via JS -->
+    </div>
+
+    <!-- Halaman Penutup (Page 4) -->
+    <div id="ending-page" class="game-container hidden">
+        <div class="ending-content">
+            <h2>Petak Umpet Nusantara</h2>
+            <p>Temukan Budayanya, Cintai Indonesianya</p>
+            <div class="refleksi-box">
+                <label for="refleksi-text">Tuliskan refleksimu setelah mengenal berbagai pakaian adat hari ini!</label>
+                <textarea id="refleksi-text" rows="4" placeholder="Ketik di sini..."></textarea>
+            </div>
+            <div class="ending-buttons">
+                <button id="btn-main-lagi" class="btn-ending">MAIN LAGI</button>
+                <button id="btn-keluar" class="btn-ending disabled" disabled>KELUAR</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Popup Fullscreen -->
+    <div id="popup-fullscreen" class="popup-overlay hidden">
+        <div class="popup-box">
+            <h2>Mode Layar Penuh</h2>
+            <p>Mainkan game dalam mode layar penuh?</p>
+            <div class="popup-buttons">
+                <button id="btn-ya" class="btn-popup btn-ya">Ya</button>
+                <button id="btn-tidak" class="btn-popup btn-tidak">Tidak</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Audio Elements -->
+    <audio id="audio-pembuka" src="Asset/audio/01 - pembuka.mp3"></audio>
+    <audio id="audio-petunjuk" src="Asset/audio/02 - petunjuk.mp3"></audio>
+
+    <script src="script.js"></script>
+</body>
+</html>
