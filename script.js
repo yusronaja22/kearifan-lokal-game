@@ -25,18 +25,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const audioPetunjuk = document.getElementById('audio-petunjuk');
     
     // Game Logic Elements & Audio
-    const hudNyawa = document.getElementById('hud-nyawa');
     const textSkor = document.getElementById('text-skor');
     const audioSfxCorrect = document.getElementById('audio-sfx-correct');
     const audioSfxWrong = document.getElementById('audio-sfx-wrong');
     const audioSfxNotif = document.getElementById('audio-sfx-notif');
     const audioBgmGame = document.getElementById('audio-bgm-game');
-    const audioBgmWin = document.getElementById('audio-bgm-win');
+    const audioPenutup = document.getElementById('audio-penutup');
     const audioSoal = document.getElementById('audio-soal');
     const audioBenar = document.getElementById('audio-benar');
     
     const endingPage = document.getElementById('ending-page');
-    const refleksiText = document.getElementById('refleksi-text');
+    // Refleksi (Textarea removed)
     const btnKeluar = document.getElementById('btn-keluar');
     const btnMainLagi = document.getElementById('btn-main-lagi');
 
@@ -44,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let typeWriterTimeout = null;
     
     const textPembuka = "Halo, teman-teman! Hari ini kita akan bermain Petak Umpet Nusantara. Sambil mencari teman-teman kita yang bersembunyi, kita juga akan belajar mengenal berbagai pakaian adat dari seluruh Indonesia beserta ciri khas dan filosofinya. Yuk, kita mulai petualangannya";
-    const textPetunjuk = "Perhatikan petunjuk berupa suara atau tulisan yang muncul untuk mencari tahu pakaian adat dari daerah mana yang sedang bersembunyi! Cari dan Klik ikon di peta yang sesuai dengan petunjuk tersebut. Jawaban yang benar akan menambah skormu, tetapi hati-hati karena tebakan yang keliru akan mengurangi poin!";
+    const textPetunjuk = "Perhatikan petunjuk berupa suara atau tulisan yang muncul untuk mencari tahu pakaian adat dari daerah mana yang sedang bersembunyi! Cari dan Klik ikon di peta yang sesuai dengan petunjuk tersebut. Jawaban yang benar akan menambah skormu!";
 
     // Show Popup Fullscreen on Mulai click
     btnMulai.addEventListener('click', (e) => {
@@ -70,10 +69,25 @@ document.addEventListener('DOMContentLoaded', () => {
         isMusicPlaying = !isMusicPlaying;
         if (isMusicPlaying) {
             musicIcon.src = 'Asset/images/music-on.svg';
+            // Resume music based on current page
+            if (!document.getElementById('ending-page').classList.contains('hidden')) {
+                audioPenutup.play().catch(e => console.log(e));
+            } else if (document.getElementById('landing-page').classList.contains('hidden')) {
+                // Berarti sedang di Story Page atau Map Page
+                audioBgmGame.play().catch(e => console.log(e));
+            }
         } else {
             musicIcon.src = 'Asset/images/music-off.svg';
+            // Pause all possible audios
             audioPembuka.pause();
             audioPetunjuk.pause();
+            audioBgmGame.pause();
+            audioSoal.pause();
+            audioBenar.pause();
+            audioPenutup.pause();
+            audioSfxNotif.pause();
+            audioSfxWrong.pause();
+            audioSfxCorrect.pause();
         }
     });
 
@@ -155,33 +169,51 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- GAME STATE ---
     let isGameStarted = false;
-    let nyawa = 3;
     let skor = 0;
     let currentRoundIndex = 0;
     
     const soalList = [
-        { id: 'aceh', text: 'Pakaian tradisional dari ujung barat Indonesia, sering dipakai untuk Tari Saman!', target: ['aceh', 'aceh-rumah', 'aceh-ruma'], popText: 'Hebat! Kamu menemukan pakaian adat Aceh! Pakaian ini sangat khas dengan sentuhan corak islami dan ikat kepala tradisionalnya.' },
-        { id: 'bali', text: 'Pakaian adat yang dilengkapi Udeng dan kain kamben untuk upacara budaya!', target: ['bali', 'bali-rumah'], popText: 'Wah, ini dia pakaian adat Bali! Made dari Bali ini dilengkapi dengan Udeng atau ikat kepala khas, serta kain kamben yang biasa digunakan dalam kegiatan upacara budaya!' },
-        { id: 'dayak', text: 'Pakaian adat dari suku di pedalaman hutan tropis dengan motif burung enggang!', target: ['dayak', 'dayak-rumah'], popText: 'Tepat! Ini adalah pakaian adat Dayak dari Kalimantan. Hiasan kepalanya menggunakan bulu burung enggang yang melambangkan keagungan!' },
-        { id: 'jawa', text: 'Pakaian adat dengan blangkon dan kebaya yang anggun!', target: ['jawa', 'jawa-rumah', 'joglo'], popText: 'Benar sekali! Ini adalah pakaian adat Jawa. Laki-laki mengenakan blangkon sebagai penutup kepala dan kain batik yang indah!' },
-        { id: 'papua', text: 'Pakaian adat berupa rok rumbai dari serat daun sagu kering dan mahkota burung cendrawasih!', target: ['papua', 'papua-rumah', 'honai'], popText: 'Luar biasa! Kamu berhasil menemukan pakaian adat Papua berupa rok rumbai dari serat daun sagu kering, berpadu mahkota burung cendrawasih yang melambangkan kedekatan dengan alam!' },
-        { id: 'toraja', text: 'Pakaian adat dari daerah yang terkenal dengan rumah Tongkonan!', target: ['toraja', 'toraja-rumah'], popText: 'Luar biasa! Ini pakaian adat Toraja dari Sulawesi Selatan, sangat khas dengan perpaduan warna merah, kuning, dan putih!' }
+        { id: 'aceh', text: 'Pakaian tradisional dari ujung barat Indonesia, sering dipakai untuk Tari Saman!', target: ['aceh', 'aceh-rumah', 'aceh-ruma'], popText: 'Halo! Aku Cut dari Aceh. Ini pakaian adatku namanya Ulee Balang. Lihat hiasan di kepalaku dan pakaian megah ini? Motif dan keindahannya melambangkan kebesaran, keberanian, serta ketinggian martabat masyarakat Aceh!' },
+        { id: 'bali', text: 'Pakaian adat yang dilengkapi Udeng dan kain kamben untuk upacara budaya!', target: ['bali', 'bali-rumah'], popText: 'Halo! Aku Made dari Bali. Ini pakaian adatku, ya. Aku memakai Udeng di kepalaku dan kain Kamben ini. Biasanya kami memakai pakaian ini saat mengikuti upacara budaya di pura sebagai wujud syukur kepada Sang Pencipta!' },
+        { id: 'dayak', text: 'Pakaian adat dari suku di pedalaman hutan tropis dengan motif burung enggang!', target: ['dayak', 'dayak-rumah'], popText: 'Hai! Aku Anah dari Kalimantan Timur. Ini baju adatku, namanya Ta\'a. Motif batik dan hiasan manik-manik di bajuku ini melambangkan kekayaan alam hutan kami yang harus selalu kita jaga!' },
+        { id: 'jawa', text: 'Pakaian adat dengan blangkon dan kebaya yang anggun!', target: ['jawa', 'jawa-rumah', 'joglo'], popText: 'Halo! Aku Raden dari Jawa Tengah. Kalau kamu melihatku memakai baju Beskap dan Blangkon di kepalaku, berarti aku sedang bersiap untuk acara istimewa. Blangkon ini bukan sekadar topi, tapi simbol kedewasaan dan tanggung jawab bagi laki-laki Jawa.' },
+        { id: 'papua', text: 'Pakaian adat berupa rok rumbai dari serat daun sagu kering dan mahkota burung cendrawasih!', target: ['papua', 'papua-rumah', 'honai'], popText: 'Halo! Aku Osea dari Papua. Pakaian ini adalah rok rumbai dari serat daun sagu. Dan lihat mahkota di kepalaku? Ini dibuat dari bulu burung cendrawasih yang melambangkan keindahan alam tanah Papua yang kami sayangi!' },
+        { id: 'toraja', text: 'Pakaian adat dari daerah yang terkenal dengan rumah Tongkonan!', target: ['toraja', 'toraja-rumah'], popText: 'Halo! Aku Rukka dari Toraja. Lihat pakaian adatku ini, namanya Baju Pokko. Warnanya yang cerah dan pola manik-manik ini melambangkan kegembiraan dan hubungan baik kami dengan Sang Pencipta serta alam sekitar.' }
     ];
 
     // Acak urutan soal
     soalList.sort(() => Math.random() - 0.5);
 
-    function updateHudNyawa() {
-        hudNyawa.innerHTML = '';
-        for(let i=0; i<3; i++) {
-            const img = document.createElement('img');
-            img.src = i < nyawa ? 'Asset/images/nyawa.svg' : 'Asset/images/mati.svg';
-            hudNyawa.appendChild(img);
-        }
-    }
+
     
     function updateHudSkor() {
         textSkor.textContent = `${skor} / 6`;
+    }
+
+    function fadeAudioVolume(audioElement, targetVolume, duration = 500) {
+        if (audioElement.fadeInterval) {
+            clearInterval(audioElement.fadeInterval);
+        }
+        const startVolume = audioElement.volume;
+        const volumeDiff = targetVolume - startVolume;
+        const steps = 20;
+        const stepTime = duration / steps;
+        const volumeStep = volumeDiff / steps;
+        
+        let currentStep = 0;
+        audioElement.fadeInterval = setInterval(() => {
+            currentStep++;
+            let newVolume = startVolume + (volumeStep * currentStep);
+            if (newVolume > 1) newVolume = 1;
+            if (newVolume < 0) newVolume = 0;
+            audioElement.volume = newVolume;
+            
+            if (currentStep >= steps) {
+                audioElement.volume = targetVolume;
+                clearInterval(audioElement.fadeInterval);
+                audioElement.fadeInterval = null;
+            }
+        }, stepTime);
     }
 
     function playNextSoal() {
@@ -191,35 +223,48 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         const currentSoal = soalList[currentRoundIndex];
         
+        // Update teks soal di wadah soal pojok kiri bawah
+        const textSoalDisplay = document.getElementById('text-soal-display');
+        if(textSoalDisplay) {
+            textSoalDisplay.textContent = currentSoal.text;
+        }
+        
         if (isMusicPlaying) {
             audioSfxNotif.play();
             audioSfxNotif.onended = () => {
                 audioSoal.src = `Asset/audio/soal-${currentSoal.id}.mp3`;
+                fadeAudioVolume(audioBgmGame, 0.2, 500); // Turunkan BGM menjadi 20%
                 audioSoal.play();
+                audioSoal.onended = () => {
+                    fadeAudioVolume(audioBgmGame, 1.0, 500); // Naikkan BGM menjadi 100%
+                };
             };
         }
     }
 
     function winGame() {
         audioBgmGame.pause();
-        if(isMusicPlaying) audioBgmWin.play();
+        audioBgmGame.currentTime = 0;
+        
+        // Play voice over penutup
+        if (isMusicPlaying) {
+            audioPenutup.currentTime = 0;
+            audioPenutup.play().catch(e => console.log("Audio play failed:", e));
+        }
+
         mapPage.classList.add('hidden');
         endingPage.classList.remove('hidden');
     }
 
-    function loseGame() {
-        ceritaKarakter.style.display = 'none'; // Sembunyikan karakter
-        ceritaTitle.classList.remove('hidden');
-        ceritaTitle.textContent = "Game Over!";
-        ceritaText.textContent = "Nyawa kamu habis! Jangan menyerah, ayo coba lagi!";
-        btnMulaiPetualangan.textContent = "Ulangi";
-        ceritaOverlay.classList.remove('hidden');
-        mapPage.appendChild(ceritaOverlay);
-        btnMulaiPetualangan.onclick = () => location.reload();
-    }
+
 
     // Handle Button Click (Mulai / Lanjut)
     btnMulaiPetualangan.addEventListener('click', () => {
+        // Hentikan pengetikan cerita pembuka jika pengguna skip (klik Mulai Petualangan) sebelum selesai
+        if (typeWriterTimeout) {
+            clearTimeout(typeWriterTimeout);
+        }
+
         if (!isGameStarted) {
             isGameStarted = true;
             storyPage.classList.add('hidden');
@@ -237,7 +282,6 @@ document.addEventListener('DOMContentLoaded', () => {
             ceritaOverlay.classList.add('hidden');
             btnMulaiPetualangan.textContent = "Lanjut";
 
-            updateHudNyawa();
             updateHudSkor();
             if(isMusicPlaying) audioBgmGame.play();
             playNextSoal();
@@ -247,27 +291,25 @@ document.addEventListener('DOMContentLoaded', () => {
             // Logika tombol "Lanjut" setelah jawaban benar
             ceritaOverlay.classList.add('hidden');
             audioBenar.pause();
+            audioBenar.currentTime = 0;
+            audioBenar.onended = null;
+            fadeAudioVolume(audioBgmGame, 1.0, 100); // Cepat naikkan BGM kembali jika di-skip
+            
             currentRoundIndex++;
             playNextSoal();
         }
     });
 
     // Handle Ending Page logic
-    refleksiText.addEventListener('input', () => {
-        if(refleksiText.value.trim().length > 0) {
-            btnKeluar.classList.remove('disabled');
-            btnKeluar.removeAttribute('disabled');
-        } else {
-            btnKeluar.classList.add('disabled');
-            btnKeluar.setAttribute('disabled', 'true');
-        }
-    });
-    
     btnKeluar.addEventListener('click', () => {
+        audioPenutup.pause();
         alert("Terima kasih telah bermain Petak Umpet Nusantara!");
         location.reload();
     });
-    btnMainLagi.addEventListener('click', () => location.reload());
+    btnMainLagi.addEventListener('click', () => {
+        audioPenutup.pause();
+        location.reload();
+    });
 
     // --- MAP LOGIC ---
     const mapWrap = document.getElementById('map-wrap');
@@ -300,30 +342,54 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderMap() {
         if(!svgMap) return;
-        svgMap.style.transform = `translate(${x}px, ${y}px) scale(${scale})`;
+        
+        // Batasi zoom out (kembali ke tampilan awal penuh jika scale <= 1)
+        if (scale <= 1.0) {
+            scale = 1.0;
+            x = 0;
+            y = 0;
+        } else {
+            // Constrain / Batasi panning agar gambar peta tidak bisa ditarik ke luar layar
+            const wrapRect = mapWrap.getBoundingClientRect();
+            const minX = wrapRect.width * (1 - scale);
+            const minY = wrapRect.height * (1 - scale);
+            
+            if (x > 0) x = 0;
+            if (x < minX) x = minX;
+            if (y > 0) y = 0;
+            if (y < minY) y = minY;
+        }
+
+        // Gunakan translate3d untuk akselerasi GPU (hardware acceleration) agar tidak berat
+        svgMap.style.transform = `translate3d(${x}px, ${y}px, 0) scale(${scale})`;
     }
 
     function zoomAt(zoomMultiplier, centerX, centerY) {
         if(!svgMap) return;
-        const rect = svgMap.getBoundingClientRect();
+        const wrapRect = mapWrap.getBoundingClientRect();
         
-        // Batasi zoom
         let newScale = scale * zoomMultiplier;
         newScale = Math.min(Math.max(0.2, newScale), 8);
         const actualMultiplier = newScale / scale;
 
-        const px = centerX - rect.left;
-        const py = centerY - rect.top;
+        // Gunakan koordinat logis untuk menghindari bug saat transisi CSS berlangsung
+        const mx = centerX - wrapRect.left;
+        const my = centerY - wrapRect.top;
 
-        x -= px * (actualMultiplier - 1);
-        y -= py * (actualMultiplier - 1);
+        x = mx - (mx - x) * actualMultiplier;
+        y = my - (my - y) * actualMultiplier;
         scale = newScale;
 
         renderMap();
     }
 
     function initMapInteractive() {
-        // Setup clickable areas (Semua ornamen, pohon, binatang, rumah)
+        // Optimasi Render SVG
+        svgMap.style.transformOrigin = '0 0'; // Wajib 0 0 untuk perhitungan zoom logis
+        svgMap.style.willChange = 'transform';
+        svgMap.style.backfaceVisibility = 'hidden';
+
+        // Setup clickable areas berdasarkan ID atau label dari SVG
         const clickableLabels = [
             'aceh-rumah','aceh-ruma','aceh-masjid','g79','g77','g80','g78','gn-ac','ph-su',
             'gajah','joglo','jawa-rumah','g90','g88','g31','g28','g89','orang-utan','dayak',
@@ -334,14 +400,8 @@ document.addEventListener('DOMContentLoaded', () => {
         ];
 
         clickableLabels.forEach(name => {
-            const byId = document.getElementById(name);
-            if(byId) byId.classList.add('map-clickable');
-
-            svgMap.querySelectorAll('[inkscape\\:label]').forEach(el => {
-                if(el.getAttribute('inkscape:label') === name) {
-                    el.classList.add('map-clickable');
-                }
-            });
+            svgMap.querySelectorAll(`[id="${name}"]`).forEach(el => el.classList.add('map-clickable'));
+            svgMap.querySelectorAll(`[inkscape\\:label="${name}"]`).forEach(el => el.classList.add('map-clickable'));
         });
 
         // Click Event
@@ -365,7 +425,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log('Clicked target:', targetId);
 
             // Validasi Game Logic
-            if(currentRoundIndex >= soalList.length || nyawa <= 0) return;
+            if(currentRoundIndex >= soalList.length) return;
             
             const currentSoal = soalList[currentRoundIndex];
             audioSoal.pause(); // Hentikan audio soal jika masih bermain
@@ -378,25 +438,43 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 // Munculkan ikon anak di atas elemen yang diklik (di dalam SVG)
                 try {
-                    const bbox = target.getBBox();
+                    let anchorElement = target;
+                    // Selalu gunakan rumah sebagai patokan ukuran dan posisi
+                    const rumahLabel = currentSoal.id + '-rumah';
+                    const rumahEl = svgMap.querySelector(`[id="${rumahLabel}"]`) || svgMap.querySelector(`[inkscape\\:label="${rumahLabel}"]`);
+                    if (rumahEl) {
+                        anchorElement = rumahEl;
+                    }
+
+                    const bbox = anchorElement.getBBox();
+                    
+                    // Buat wrapper group untuk menahan transform SVG ikon agar tidak tertimpa animasi CSS
+                    const wrapperGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                    const transform = anchorElement.getAttribute('transform');
+                    if (transform) {
+                        wrapperGroup.setAttribute('transform', transform);
+                    }
+                    
                     const childIcon = document.createElementNS('http://www.w3.org/2000/svg', 'image');
                     childIcon.setAttribute('href', `Asset/images/ikon-${currentSoal.id}.png`);
                     childIcon.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', `Asset/images/ikon-${currentSoal.id}.png`);
                     
-                    // Posisi sedikit di atas rumah/ornamen dan agak ke tengah
+                    // Posisi akhir ikon: Di samping kanan rumah
                     const iconWidth = Math.max(bbox.width * 1.5, 60); 
                     const iconHeight = iconWidth;
-                    childIcon.setAttribute('x', bbox.x + (bbox.width / 2) - (iconWidth / 2));
-                    childIcon.setAttribute('y', bbox.y - (iconHeight * 0.8)); // Muncul dari balik atap
+                    childIcon.setAttribute('x', bbox.x + bbox.width - (iconWidth * 0.3)); // Mengintip dari kanan
+                    childIcon.setAttribute('y', bbox.y + (bbox.height / 2) - (iconHeight / 2)); // Vertikal di tengah
                     childIcon.setAttribute('width', iconWidth);
                     childIcon.setAttribute('height', iconHeight);
-                    childIcon.classList.add('muncul-animasi'); // Tambahkan animasi jika ada
                     
-                    // Sisipkan tepat setelah elemen target agar berada di layer atasnya
-                    if(target.parentNode) {
-                        target.parentNode.insertBefore(childIcon, target.nextSibling);
+                    childIcon.classList.add('muncul-animasi-samping'); // Animasi pop up ke samping
+                    wrapperGroup.appendChild(childIcon);
+                    
+                    // Sisipkan ikon TEPAT DI BELAKANG rumah
+                    if(anchorElement.parentNode) {
+                        anchorElement.parentNode.insertBefore(wrapperGroup, anchorElement);
                     } else {
-                        svgMap.appendChild(childIcon);
+                        svgMap.insertBefore(wrapperGroup, svgMap.firstChild);
                     }
                 } catch(e) {
                     console.error("Gagal menaruh ikon:", e);
@@ -411,7 +489,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     ceritaText.textContent = currentSoal.popText;
                     
                     audioBenar.src = `Asset/audio/benar-${currentSoal.id}.mp3`;
+                    if (isMusicPlaying) {
+                        fadeAudioVolume(audioBgmGame, 0.2, 500); // Turunkan BGM
+                    }
                     audioBenar.play().catch(e => console.log(e));
+                    audioBenar.onended = () => {
+                        if (isMusicPlaying) {
+                            fadeAudioVolume(audioBgmGame, 1.0, 500); // Naikkan BGM kembali
+                        }
+                    };
                     
                     ceritaOverlay.classList.remove('hidden');
                 }, 1200);
@@ -419,12 +505,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 // SALAH (jawaban kosong / objek lain)
                 audioSfxWrong.play().catch(e => console.log(e));
-                nyawa--;
-                updateHudNyawa();
-                
-                if (nyawa <= 0) {
-                    loseGame();
-                }
+                // Hukuman/nyawa sudah dihilangkan sesuai request
             }
         });
 
@@ -445,7 +526,7 @@ document.addEventListener('DOMContentLoaded', () => {
         mapWrap.addEventListener('pointerdown', event => {
             if(event.pointerType === 'mouse' && event.button !== 0) return;
             activePointers.set(event.pointerId, event);
-            try { mapWrap.setPointerCapture(event.pointerId); } catch(e) {}
+            // try { mapWrap.setPointerCapture(event.pointerId); } catch(e) {}
 
             if(activePointers.size >= 2) {
                 const pts = [...activePointers.values()];
@@ -456,6 +537,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 pinchMapX = x; pinchMapY = y;
                 gestureMode = 'pinch';
                 moved = true;
+                svgMap.style.transition = 'none'; // Pastikan tidak ada delay saat pinch
                 return;
             }
 
@@ -466,6 +548,7 @@ document.addEventListener('DOMContentLoaded', () => {
             startY = event.clientY;
             startMapX = x;
             startMapY = y;
+            svgMap.style.transition = 'none'; // Pastikan tidak ada delay saat pan
             mapWrap.classList.add('dragging');
         });
 
@@ -509,7 +592,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         function endPointer(event) {
             activePointers.delete(event.pointerId);
-            try { mapWrap.releasePointerCapture(event.pointerId); } catch(e) {}
+            // try { mapWrap.releasePointerCapture(event.pointerId); } catch(e) {}
 
             if(activePointers.size === 0) {
                 dragging = false;
@@ -531,9 +614,19 @@ document.addEventListener('DOMContentLoaded', () => {
         mapWrap.addEventListener('pointercancel', endPointer);
 
         // Wheel Zoom
+        let wheelTimeout;
         mapWrap.addEventListener('wheel', event => {
             event.preventDefault();
-            zoomAt(event.deltaY < 0 ? 1.12 : 0.89, event.clientX, event.clientY);
+            
+            // Berikan transisi halus saat menggunakan scroll wheel
+            svgMap.style.transition = 'transform 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+            clearTimeout(wheelTimeout);
+            wheelTimeout = setTimeout(() => {
+                if(svgMap) svgMap.style.transition = 'none';
+            }, 150);
+
+            // Menggunakan pengali zoom yang lebih halus (1.15) daripada langsung meloncat jauh
+            zoomAt(event.deltaY < 0 ? 1.15 : 0.85, event.clientX, event.clientY);
         }, { passive: false });
 
         renderMap();

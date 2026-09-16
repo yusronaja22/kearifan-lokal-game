@@ -13,6 +13,12 @@
     <!-- Overlay Putar Perangkat (Portrait to Landscape) -->
     <div id="landscape-warning" class="landscape-warning">
         <div class="warning-content">
+            <div class="phone-rotate-icon">
+                <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="25" y="10" width="50" height="80" rx="8" ry="8" fill="none" stroke="white" stroke-width="6"/>
+                    <line x1="40" y1="80" x2="60" y2="80" stroke="white" stroke-width="4" stroke-linecap="round"/>
+                </svg>
+            </div>
             <p>Silakan putar perangkat Anda ke mode Mendatar (Landscape) untuk bermain.</p>
         </div>
     </div>
@@ -59,9 +65,10 @@
     <!-- Halaman Game Utama (Page 3) -->
     <div id="map-page" class="game-container hidden">
         <!-- HUD (Heads Up Display) -->
-        <div id="hud-top" class="hud-container">
-            <div id="hud-nyawa" class="hud-item hud-nyawa">
-                <!-- Nyawa diisi via JS -->
+        <div id="hud-bottom" class="hud-container">
+            <div id="hud-soal" class="hud-item hud-soal">
+                <img src="Asset/images/icon-soal.svg" alt="Soal">
+                <p id="text-soal-display">Teks Soal</p>
             </div>
             <div id="hud-skor" class="hud-item hud-skor">
                 <img src="Asset/images/wadah-ketemu.svg" alt="Skor">
@@ -79,20 +86,48 @@
         <audio id="audio-bgm-win" src="Asset/audio/Winning.mp3"></audio>
         <audio id="audio-soal"></audio> <!-- Source diset dinamis via JS -->
         <audio id="audio-benar"></audio> <!-- Source diset dinamis via JS -->
+        <audio id="audio-penutup" src="Asset/audio/03 - penutup.mp3"></audio>
     </div>
 
-    <!-- Halaman Penutup (Page 4) -->
+    <!-- Halaman Akhir (Ending Page) -->
     <div id="ending-page" class="game-container hidden">
-        <div class="ending-content">
-            <h2>Petak Umpet Nusantara</h2>
-            <p>Temukan Budayanya, Cintai Indonesianya</p>
-            <div class="refleksi-box">
-                <label for="refleksi-text">Tuliskan refleksimu setelah mengenal berbagai pakaian adat hari ini!</label>
-                <textarea id="refleksi-text" rows="4" placeholder="Ketik di sini..."></textarea>
+        <!-- 6 Karakter (Group Photo) -->
+        <div class="ending-characters">
+            <!-- Kiri -->
+            <img class="char-bali" src="Asset/images/pop-bali.png" alt="Bali">
+            <img class="char-jawa" src="Asset/images/pop-jawa.png" alt="Jawa">
+            <img class="char-papua" src="Asset/images/pop-papua.png" alt="Papua">
+            
+            <!-- Kanan -->
+            <img class="char-dayak" src="Asset/images/pop-dayak.png" alt="Dayak">
+            <img class="char-aceh" src="Asset/images/pop-aceh.png" alt="Aceh">
+            <img class="char-toraja" src="Asset/images/pop-toraja.png" alt="Toraja">
+        </div>
+
+        <div class="ending-popup">
+            <div class="ending-content">
+                <!-- 3 Bintang -->
+                <div class="stars-container">
+                    <svg viewBox="0 0 51 48" class="star-icon"><path fill="#fdd236" stroke="#b27b00" stroke-width="2" d="m25,1 6,17h18l-15,11 5,17-14-10-14,10 5-17-15-11h18z"/></svg>
+                    <svg viewBox="0 0 51 48" class="star-icon star-center"><path fill="#fdd236" stroke="#b27b00" stroke-width="2" d="m25,1 6,17h18l-15,11 5,17-14-10-14,10 5-17-15-11h18z"/></svg>
+                    <svg viewBox="0 0 51 48" class="star-icon"><path fill="#fdd236" stroke="#b27b00" stroke-width="2" d="m25,1 6,17h18l-15,11 5,17-14-10-14,10 5-17-15-11h18z"/></svg>
+                </div>
+
+                <h1 class="ending-title">HEBAT!</h1>
+                <p>Kamu berhasil menemukan 6 dari 6 anak</p>
+                
+                <div class="refleksi-box">
+                    <ol class="teks-tantangan">
+                        <li>Pakaian adat daerah mana yang paling kamu sukai?</li>
+                        <li>Apa keunikan atau daya tarik pakaian adat pilihanmu tersebut?</li>
+                        <li>Mengapa kita perlu melestarikan keberagaman pakaian adat Indonesia?</li>
+                    </ol>
+                </div>
             </div>
-            <div class="ending-buttons">
-                <button id="btn-main-lagi" class="btn-ending">MAIN LAGI</button>
-                <button id="btn-keluar" class="btn-ending disabled" disabled>KELUAR</button>
+            
+            <div class="ending-controls">
+                <button id="btn-main-lagi" class="btn-main-lagi">Ulangi</button>
+                <button id="btn-keluar" class="btn-keluar">Keluar</button>
             </div>
         </div>
     </div>
