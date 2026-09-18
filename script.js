@@ -133,32 +133,91 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function startGame() {
-        // Hide landing page, show story page
         landingPage.classList.add('hidden');
+        endingPage.classList.add('hidden');
         storyPage.classList.remove('hidden');
+
+        // Ensure popup-end.svg is used for the start of the game
+        const popupElement = document.querySelector('.cerita-popup');
+        if (popupElement) {
+            popupElement.classList.remove('mode-ketemu');
+            popupElement.style.backgroundImage = "url('Asset/images/popup-end.svg')";
+        }
+        
+        // Hide character explicitly during story sequence
+        if (ceritaKarakter) {
+            ceritaKarakter.classList.add('hidden');
+        }
+
+        // Reset button text
+        btnMulaiPetualangan.innerHTML = "Mulai Petualangan";
+        btnMulaiPetualangan.style = ""; // Reset any inline styles if necessary
 
         // Start Story Sequence
         playStorySequence();
     }
 
-    function playStorySequence() {
-        // Show first text with typewriter effect and play first audio
-        typeWriter(textPembuka, ceritaText, 80); 
-        
-        if (isMusicPlaying) {
-            audioPembuka.play().catch(e => console.log("Audio autoplay prevented", e));
-        }
+    // --- Carousel Logic for Panduan Permainan ---
+    const panduanCarousel = document.getElementById('panduan-carousel');
+    const carouselTrack = document.getElementById('carousel-track');
+    const dots = document.querySelectorAll('.dot');
+    let currentSlide = 0;
+    const totalSlides = 2;
 
-        // When first audio ends, play second audio
-        audioPembuka.onended = () => {
-            ceritaTitle.classList.remove('hidden'); // Munculkan judul "Panduan Permainan"
-            
-            // Hentikan pengetikan jika ada sisa dan langsung tampilkan teks penuh
-            if (typeWriterTimeout) clearTimeout(typeWriterTimeout);
-            ceritaText.textContent = textPetunjuk;
-            
+    function updateCarousel() {
+        if (!carouselTrack) return;
+        carouselTrack.style.transform = `translateX(-${currentSlide * 50}%)`;
+        dots.forEach((dot, index) => {
+            if (index === currentSlide) {
+                dot.classList.add('active');
+            } else {
+                dot.classList.remove('active');
+            }
+        });
+
+        // Atur judul dan audio berdasarkan slide saat ini
+        if (currentSlide === 0) {
+            ceritaTitle.textContent = "Tujuan Pembelajaran dan Misi";
             if (isMusicPlaying) {
-                audioPetunjuk.play();
+                audioPetunjuk.pause();
+                audioPetunjuk.currentTime = 0;
+                audioPembuka.play().catch(e => console.log(e));
+            }
+        } else {
+            ceritaTitle.textContent = "Panduan Permainan";
+            if (isMusicPlaying) {
+                audioPembuka.pause();
+                audioPembuka.currentTime = 0;
+                if (audioPetunjuk.paused) {
+                    audioPetunjuk.play().catch(e => console.log(e));
+                }
+            }
+        }
+    }
+
+    dots.forEach((dot, index) => {
+        dot.addEventListener('click', () => { currentSlide = index; updateCarousel(); });
+    });
+
+    function playStorySequence() {
+        // Hentikan pengetikan jika sedang berjalan
+        if (typeWriterTimeout) clearTimeout(typeWriterTimeout);
+        
+        // Sembunyikan teks cerita biasa, langsung tampilkan carousel
+        ceritaText.classList.add('hidden');
+        ceritaTitle.classList.remove('hidden');
+        
+        if (panduanCarousel) {
+            panduanCarousel.classList.remove('hidden');
+            currentSlide = 0;
+            updateCarousel(); // Ini otomatis akan memainkan audioPembuka
+        }
+        
+        // Auto-advance ke petunjuk saat audio pembuka selesai
+        audioPembuka.onended = () => {
+            if (currentSlide === 0) {
+                currentSlide = 1;
+                updateCarousel();
             }
         };
 
@@ -187,7 +246,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     
     function updateHudSkor() {
-        textSkor.textContent = `${skor} / 6`;
+        const skorIcons = document.querySelectorAll('#skor-icons .skor-icon');
+        for (let i = 0; i < skorIcons.length; i++) {
+            if (i < skor) {
+                skorIcons[i].src = 'Asset/images/ketemu.svg';
+                skorIcons[i].classList.add('muncul-animasi-samping'); // Tambahkan efek
+            } else {
+                skorIcons[i].src = 'Asset/images/sembunyi.svg';
+                skorIcons[i].classList.remove('muncul-animasi-samping');
+            }
+        }
     }
 
     function fadeAudioVolume(audioElement, targetVolume, duration = 500) {
@@ -480,14 +548,34 @@ document.addEventListener('DOMContentLoaded', () => {
                     console.error("Gagal menaruh ikon:", e);
                 }
                 
-                // Beri jeda sedikit agar pemain bisa melihat anak yang muncul di peta sebelum popup menutupi layar
                 setTimeout(() => {
-                    ceritaKarakter.style.display = 'block';
+                    ceritaOverlay.classList.remove('hidden');
+                    
+                    // Ganti background popup ke popup-ketemu.svg
+                    const popupElement = document.querySelector('.cerita-popup');
+                    if (popupElement) {
+                        popupElement.classList.add('mode-ketemu');
+                        popupElement.style.backgroundImage = ""; // Let CSS handle it
+                    }
+                    
                     ceritaKarakter.src = `Asset/images/pop-${currentSoal.id}.png`;
+                    ceritaKarakter.classList.remove('hidden'); // Show character
                     ceritaTitle.classList.remove('hidden');
                     ceritaTitle.textContent = "Berhasil!";
-                    ceritaText.textContent = currentSoal.popText;
                     
+                    // Sembunyikan carousel jika sebelumnya dipakai
+                    const panduanCarousel = document.getElementById('panduan-carousel');
+                    if (panduanCarousel) {
+                        panduanCarousel.classList.add('hidden');
+                    }
+                    
+                    ceritaText.classList.remove('hidden');
+                    ceritaText.innerHTML = currentSoal.popText;
+                    btnMulaiPetualangan.innerHTML = "<img src='Asset/images/next.svg' alt='Lanjut' style='height: 45px;'>"; // Use next.svg
+                    btnMulaiPetualangan.style.pointerEvents = 'auto';
+                    btnMulaiPetualangan.style.display = 'block';
+                    
+                    document.getElementById('cerita-overlay').classList.remove('hidden');
                     audioBenar.src = `Asset/audio/benar-${currentSoal.id}.mp3`;
                     if (isMusicPlaying) {
                         fadeAudioVolume(audioBgmGame, 0.2, 500); // Turunkan BGM
@@ -498,9 +586,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             fadeAudioVolume(audioBgmGame, 1.0, 500); // Naikkan BGM kembali
                         }
                     };
-                    
-                    ceritaOverlay.classList.remove('hidden');
-                }, 1200);
+                }, 600);
                 
             } else {
                 // SALAH (jawaban kosong / objek lain)

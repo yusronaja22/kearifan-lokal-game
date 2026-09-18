@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kearifan Lokal - Landing Page</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=3">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
 </head>
 <body>
     <!-- Overlay Putar Perangkat (Portrait to Landscape) -->
@@ -50,29 +50,67 @@
     <!-- Halaman Cerita (Page 2) -->
     <div id="story-page" class="game-container hidden">
         <div class="cerita-overlay" id="cerita-overlay">
-            <img id="cerita-karakter" class="karakter-kiri" src="Asset/images/pop-toraja.png" alt="Karakter Toraja">
-            
-            <div class="cerita-popup">
+            <div id="cerita-popup" class="cerita-popup">
+                <img id="cerita-karakter" class="karakter-kiri hidden" src="Asset/images/pop-toraja.png" alt="Karakter Toraja">
                 <div class="cerita-content">
                     <h2 id="cerita-title" class="hidden">Panduan Permainan</h2>
                     <p id="cerita-text"></p>
+                    
+                    <!-- Carousel Panduan Permainan -->
+                    <div id="panduan-carousel" class="hidden">
+                        <div class="carousel-container">
+                            <div class="carousel-track" id="carousel-track">
+                                <div class="carousel-slide" style="text-align: left; font-size: 2.8vmin;">
+                                    <p style="margin-bottom: 5px;"><strong>Tujuan Pembelajaran:</strong></p>
+                                    <ul style="margin: 0 0 10px 20px; padding: 0;">
+                                        <li>Menghubungkan kebudayaan nasional dengan nilai-nilai kearifan lokal di lingkungan tempat tinggal</li>
+                                        <li>Menelusuri kearifan lokal daerah tempat tinggal.</li>
+                                    </ul>
+                                    <p style="margin-bottom: 5px;"><strong>Misi:</strong></p>
+                                    <ul style="margin: 0 0 0 20px; padding: 0;">
+                                        <li>Mencari 6 anak dengan pakaian adat berdasarkan daerah tempat tinggalnya</li>
+                                    </ul>
+                                </div>
+                                <div class="carousel-slide" style="text-align: left; font-size: 2.8vmin;">
+                                    <ul style="margin: 0 0 0 20px; padding: 0;">
+                                        <li style="margin-bottom: 8px;">Perhatikan petunjuk berupa suara atau tulisan yang muncul untuk mencari tahu pakaian adat dari daerah mana yang sedang bersembunyi!</li>
+                                        <li style="margin-bottom: 8px;">Cari dan Klik ikon di peta yang sesuai dengan petunjuk tersebut.</li>
+                                        <li>Jawaban yang benar akan menambah skormu</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="carousel-indicators" id="carousel-indicators">
+                            <span class="dot active" data-slide="0"></span>
+                            <span class="dot" data-slide="1"></span>
+                        </div>
+                    </div>
                 </div>
+                <button id="btn-mulai-petualangan" class="btn-mulai-petualangan">Mulai Petualangan</button>
             </div>
-            <button id="btn-mulai-petualangan" class="btn-mulai-petualangan">Mulai Petualangan</button>
         </div>
     </div>
 
     <!-- Halaman Game Utama (Page 3) -->
     <div id="map-page" class="game-container hidden">
         <!-- HUD (Heads Up Display) -->
-        <div id="hud-bottom" class="hud-container">
+        <div id="hud-top" class="hud-top-container">
             <div id="hud-soal" class="hud-item hud-soal">
                 <img src="Asset/images/icon-soal.svg" alt="Soal">
                 <p id="text-soal-display">Teks Soal</p>
             </div>
+        </div>
+        <div id="hud-bottom" class="hud-container">
             <div id="hud-skor" class="hud-item hud-skor">
-                <img src="Asset/images/wadah-ketemu.svg" alt="Skor">
-                <span id="text-skor">0 / 6</span>
+                <img src="Asset/images/wadah-ketemu.svg" alt="Skor" class="hud-skor-bg">
+                <div id="skor-icons" class="skor-icons-container">
+                    <img src="Asset/images/sembunyi.svg" class="skor-icon">
+                    <img src="Asset/images/sembunyi.svg" class="skor-icon">
+                    <img src="Asset/images/sembunyi.svg" class="skor-icon">
+                    <img src="Asset/images/sembunyi.svg" class="skor-icon">
+                    <img src="Asset/images/sembunyi.svg" class="skor-icon">
+                    <img src="Asset/images/sembunyi.svg" class="skor-icon">
+                </div>
             </div>
         </div>
 
