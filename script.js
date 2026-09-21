@@ -408,6 +408,8 @@ document.addEventListener('DOMContentLoaded', () => {
             .catch(err => console.error("Failed to load map:", err));
     }
 
+    let renderMapRAF = null;
+
     function renderMap() {
         if(!svgMap) return;
         
@@ -432,6 +434,11 @@ document.addEventListener('DOMContentLoaded', () => {
         svgMap.style.transform = `translate3d(${x}px, ${y}px, 0) scale(${scale})`;
     }
 
+    function scheduleRender() {
+        if (renderMapRAF) cancelAnimationFrame(renderMapRAF);
+        renderMapRAF = requestAnimationFrame(renderMap);
+    }
+
     function zoomAt(zoomMultiplier, centerX, centerY) {
         if(!svgMap) return;
         const wrapRect = mapWrap.getBoundingClientRect();
@@ -448,7 +455,7 @@ document.addEventListener('DOMContentLoaded', () => {
         y = my - (my - y) * actualMultiplier;
         scale = newScale;
 
-        renderMap();
+        scheduleRender();
     }
 
     function initMapInteractive() {
@@ -661,7 +668,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 y = newPy - (startPy - pinchMapY) * ratio + (mid.y - pinchMidY);
                 scale = newScale;
                 
-                renderMap();
+                scheduleRender();
                 return;
             }
 
@@ -673,7 +680,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             x = startMapX + dx;
             y = startMapY + dy;
-            renderMap();
+            scheduleRender();
         });
 
         function endPointer(event) {
@@ -715,7 +722,7 @@ document.addEventListener('DOMContentLoaded', () => {
             zoomAt(event.deltaY < 0 ? 1.15 : 0.85, event.clientX, event.clientY);
         }, { passive: false });
 
-        renderMap();
+        scheduleRender();
     }
 
     // Call loadMap to start fetching the SVG in the background
