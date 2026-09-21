@@ -343,18 +343,19 @@ body, html {
     background-size: 100% 100%;
     background-position: center;
     background-repeat: no-repeat;
-    width: 65%;
-    max-width: 850px;
+    width: 85vw;
+    max-width: min(850px, 120vh); /* Cap width so height doesn't exceed 75vh */
     aspect-ratio: 1185.69 / 750.21; /* Match SVG exact aspect ratio */
     position: relative; /* So children can be absolutely positioned */
     display: block; /* Use block, child will use absolute positioning */
+    margin: auto;
 }
 
 .cerita-popup.mode-ketemu {
     background-image: url('Asset/images/popup-ketemu.svg') !important;
-    margin-top: -40px; /* Geser ke atas sedikit agar menutupi kotak soal */
-    transform: scale(1.05); /* Sedikit lebih besar agar benar-benar menutupi soal */
     aspect-ratio: 1185.69 / 750.21; /* Exact SVG aspect ratio */
+    margin: auto !important; /* Pastikan tetap di tengah */
+    transform: none !important; /* Hapus scale agar tidak tumpah/melewati batas layar */
 }
 
 .cerita-popup.mode-ketemu .karakter-kiri {
@@ -368,9 +369,9 @@ body, html {
 
 .cerita-popup.mode-ketemu .cerita-content {
     position: absolute !important;
-    left: 41% !important; /* Start after white box */
+    left: 42% !important; /* Start slightly after the character */
     top: 25% !important; /* Below the title */
-    width: 53% !important;
+    width: 50% !important; /* Fit inside the white area */
     bottom: 12% !important; /* Leave space for button */
     padding: 0 !important; 
     margin: 0 !important;
@@ -405,10 +406,10 @@ body, html {
 
 .cerita-content {
     position: absolute;
-    top: 25%; /* Aligned with the top of the white box (approx 22.6% + padding) */
+    top: 25%; /* Aligned with the top of the white box */
     bottom: 15%; /* Leave room at the bottom */
-    left: 6%;
-    right: 6%;
+    left: 10%; /* Increased for more safety margin */
+    right: 10%; /* Increased for more safety margin */
     overflow-y: auto; /* Izinkan scroll jika teks terlalu panjang */
     display: flex;
     flex-direction: column;
@@ -445,12 +446,13 @@ body, html {
 .carousel-slide {
     width: 50%;
     flex-shrink: 0;
-    padding: 0 10px;
+    padding: 0 15px;
     box-sizing: border-box;
+    text-align: left;
 }
-.carousel-slide p {
+.carousel-slide p, .carousel-slide ul, .carousel-slide li {
     margin: 0;
-    font-size: 3.2vmin;
+    font-size: 3vmin;
 }
 .carousel-indicators {
     display: flex;
@@ -469,6 +471,17 @@ body, html {
 }
 .dot.active {
     background-color: #a84c17;
+}
+
+@keyframes pulseHint {
+    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(242, 101, 34, 0.8); }
+    70% { transform: scale(1.4); box-shadow: 0 0 0 10px rgba(242, 101, 34, 0); }
+    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(242, 101, 34, 0); }
+}
+
+.dot-hint {
+    animation: pulseHint 1.5s infinite;
+    background-color: #f26522 !important; /* Warna oranye terang agar lebih mencolok */
 }
 
 #cerita-title {
@@ -493,8 +506,8 @@ body, html {
 .cerita-popup.mode-ketemu #cerita-title {
     position: absolute;
     top: 8%; /* Top of the yellow area on the right */
-    left: 41%;
-    width: 53%;
+    left: 42%;
+    width: 50%;
     height: auto;
     display: block;
     margin: 0;
@@ -791,13 +804,14 @@ body, html {
     background-size: 100% 100%;
     background-position: center;
     background-repeat: no-repeat;
-    width: 65%;
-    max-width: 800px;
+    width: 85vw;
+    max-width: min(800px, 120vh); /* Cap width so height doesn't exceed 75vh */
     aspect-ratio: 1185.69 / 750.21;
     display: block;
     z-index: 50;
     position: relative;
     box-shadow: 0 15px 30px rgba(0,0,0,0.4);
+    margin: auto;
 }
 
 .ending-content {
@@ -909,8 +923,7 @@ body, html {
 .disabled {
     opacity: 0.5;
     cursor: not-allowed;
-    transform: none !important;
-    box-shadow: none !important;
+    pointer-events: none;
 }
 
 .btn-ending:not(.disabled):hover {
@@ -946,7 +959,15 @@ body, html {
 
     /* Story Page / Popup */
     .cerita-overlay { z-index: 150; } /* Ensure popup is above HUD */
-    .cerita-popup { width: 75%; max-width: none; margin-left: 12%; padding: 2% 15% 6% 15%; aspect-ratio: 1.7/1; height: auto; max-height: 75vh; }
+    .cerita-popup { 
+        width: 95vw; 
+        max-width: 125vh; /* max-height becomes ~79vh (125/1.58). This prevents overflow! */
+        margin: auto; 
+        padding: 0; 
+        aspect-ratio: 1185.69 / 750.21; 
+        height: auto; 
+        max-height: none; 
+    }
     .karakter-kiri { height: 80%; left: 2%; } /* Keep character fully visible */
     #cerita-title { font-size: 4.5vmin; margin-bottom: 5px; }
     #cerita-text { font-size: 3vmin; }
@@ -963,7 +984,10 @@ body, html {
 }
 
 @media (max-width: 800px), (max-height: 500px) {
-    .ending-popup { width: 85%; }
+    .ending-popup { 
+        width: 95vw; 
+        max-width: 125vh; /* max-height becomes ~79vh */
+    }
     .star-icon { width: 40px; height: 40px; }
     .star-center { width: 50px; height: 50px; transform: translateY(-5px); }
     .ending-title { font-size: 6vmin; }

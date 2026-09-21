@@ -175,6 +175,17 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
+        // Tampilkan/Aktifkan tombol Mulai Petualangan jika slide petunjuk (slide 1) dibuka
+        if (currentSlide === 1 && !isGameStarted) {
+            btnMulaiPetualangan.classList.remove('disabled');
+            btnMulaiPetualangan.disabled = false;
+            
+            // Hapus animasi hint pada dot ke-2 jika user sudah mengkliknya
+            if (dots[1]) {
+                dots[1].classList.remove('dot-hint');
+            }
+        }
+
         // Atur judul dan audio berdasarkan slide saat ini
         if (currentSlide === 0) {
             ceritaTitle.textContent = "Tujuan Pembelajaran dan Misi";
@@ -207,6 +218,10 @@ document.addEventListener('DOMContentLoaded', () => {
         ceritaText.classList.add('hidden');
         ceritaTitle.classList.remove('hidden');
         
+        // Nonaktifkan tombol mulai sebelum petunjuk dibuka
+        btnMulaiPetualangan.classList.add('disabled');
+        btnMulaiPetualangan.disabled = true;
+        
         if (panduanCarousel) {
             panduanCarousel.classList.remove('hidden');
             currentSlide = 0;
@@ -232,12 +247,12 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentRoundIndex = 0;
     
     const soalList = [
-        { id: 'aceh', text: 'Pakaian tradisional dari ujung barat Indonesia, sering dipakai untuk Tari Saman!', target: ['aceh', 'aceh-rumah', 'aceh-ruma'], popText: 'Halo! Aku Cut dari Aceh. Ini pakaian adatku namanya Ulee Balang. Lihat hiasan di kepalaku dan pakaian megah ini? Motif dan keindahannya melambangkan kebesaran, keberanian, serta ketinggian martabat masyarakat Aceh!' },
-        { id: 'bali', text: 'Pakaian adat yang dilengkapi Udeng dan kain kamben untuk upacara budaya!', target: ['bali', 'bali-rumah'], popText: 'Halo! Aku Made dari Bali. Ini pakaian adatku, ya. Aku memakai Udeng di kepalaku dan kain Kamben ini. Biasanya kami memakai pakaian ini saat mengikuti upacara budaya di pura sebagai wujud syukur kepada Sang Pencipta!' },
-        { id: 'dayak', text: 'Pakaian adat dari suku di pedalaman hutan tropis dengan motif burung enggang!', target: ['dayak', 'dayak-rumah'], popText: 'Hai! Aku Anah dari Kalimantan Timur. Ini baju adatku, namanya Ta\'a. Motif batik dan hiasan manik-manik di bajuku ini melambangkan kekayaan alam hutan kami yang harus selalu kita jaga!' },
-        { id: 'jawa', text: 'Pakaian adat dengan blangkon dan kebaya yang anggun!', target: ['jawa', 'jawa-rumah', 'joglo'], popText: 'Halo! Aku Raden dari Jawa Tengah. Kalau kamu melihatku memakai baju Beskap dan Blangkon di kepalaku, berarti aku sedang bersiap untuk acara istimewa. Blangkon ini bukan sekadar topi, tapi simbol kedewasaan dan tanggung jawab bagi laki-laki Jawa.' },
-        { id: 'papua', text: 'Pakaian adat berupa rok rumbai dari serat daun sagu kering dan mahkota burung cendrawasih!', target: ['papua', 'papua-rumah', 'honai'], popText: 'Halo! Aku Osea dari Papua. Pakaian ini adalah rok rumbai dari serat daun sagu. Dan lihat mahkota di kepalaku? Ini dibuat dari bulu burung cendrawasih yang melambangkan keindahan alam tanah Papua yang kami sayangi!' },
-        { id: 'toraja', text: 'Pakaian adat dari daerah yang terkenal dengan rumah Tongkonan!', target: ['toraja', 'toraja-rumah'], popText: 'Halo! Aku Rukka dari Toraja. Lihat pakaian adatku ini, namanya Baju Pokko. Warnanya yang cerah dan pola manik-manik ini melambangkan kegembiraan dan hubungan baik kami dengan Sang Pencipta serta alam sekitar.' }
+        { id: 'aceh', text: 'Coba tebak siapa yang bersembunyi di serambi Mekkah!', target: ['aceh', 'aceh-rumah', 'aceh-ruma'], popText: 'Halo! Aku Cut dari Aceh. Ini pakaian adatku namanya Ulee Balang. Lihat hiasan di kepalaku dan pakaian megah ini? Motif dan keindahannya melambangkan kebesaran, keberanian, serta ketinggian martabat masyarakat Aceh!' },
+        { id: 'bali', text: 'Cari anak dengan udeng di pulau dewata sekarang', target: ['bali', 'bali-rumah'], popText: 'Halo! Aku Made dari Bali. Ini pakaian adatku, ya. Aku memakai Udeng di kepalaku dan kain Kamben ini. Biasanya kami memakai pakaian ini saat mengikuti upacara budaya di pura sebagai wujud syukur kepada Sang Pencipta!' },
+        { id: 'dayak', text: 'Coba tebak siapa bersembunyi di hutan borneo!', target: ['dayak', 'dayak-rumah'], popText: 'Hai! Aku Anah dari Kalimantan Timur. Ini baju adatku, namanya Ta\'a. Motif batik dan hiasan manik-manik di bajuku ini melambangkan kekayaan alam hutan kami yang harus selalu kita jaga!' },
+        { id: 'jawa', text: 'Cari anak yang mengenakan blangkon!', target: ['jawa', 'jawa-rumah', 'joglo'], popText: 'Halo! Aku Raden dari Jawa Tengah. Kalau kamu melihatku memakai baju Beskap dan Blangkon di kepalaku, berarti aku sedang bersiap untuk acara istimewa. Blangkon ini bukan sekadar topi, tapi simbol kedewasaan dan tanggung jawab bagi laki-laki Jawa.' },
+        { id: 'papua', text: 'Coba tebak siapa bersembunyi di ujung timur!', target: ['papua', 'papua-rumah', 'honai'], popText: 'Halo! Aku Osea dari Papua. Pakaian ini adalah rok rumbai dari serat daun sagu. Dan lihat mahkota di kepalaku? Ini dibuat dari bulu burung cendrawasih yang melambangkan keindahan alam tanah Papua yang kami sayangi!' },
+        { id: 'toraja', text: 'Temukan anak manis di tanah bugis!', target: ['toraja', 'toraja-rumah'], popText: 'Halo! Aku Rukka dari Toraja. Lihat pakaian adatku ini, namanya Baju Pokko. Warnanya yang cerah dan pola manik-manik ini melambangkan kegembiraan dan hubungan baik kami dengan Sang Pencipta serta alam sekitar.' }
     ];
 
     // Acak urutan soal
@@ -328,6 +343,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Handle Button Click (Mulai / Lanjut)
     btnMulaiPetualangan.addEventListener('click', () => {
+        if (btnMulaiPetualangan.disabled || btnMulaiPetualangan.classList.contains('disabled')) {
+            return; // Cegah klik jika sedang dinonaktifkan
+        }
+
         // Hentikan pengetikan cerita pembuka jika pengguna skip (klik Mulai Petualangan) sebelum selesai
         if (typeWriterTimeout) {
             clearTimeout(typeWriterTimeout);
@@ -581,6 +600,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     btnMulaiPetualangan.innerHTML = "<img src='Asset/images/next.svg' alt='Lanjut' style='height: 45px;'>"; // Use next.svg
                     btnMulaiPetualangan.style.pointerEvents = 'auto';
                     btnMulaiPetualangan.style.display = 'block';
+                    btnMulaiPetualangan.classList.remove('disabled');
+                    btnMulaiPetualangan.disabled = false;
                     
                     document.getElementById('cerita-overlay').classList.remove('hidden');
                     audioBenar.src = `Asset/audio/benar-${currentSoal.id}.mp3`;
