@@ -611,6 +611,193 @@ body, html {
     filter: brightness(1.3);
 }
 
+/* --- MAP NAVIGATION CONTROLS (Zoom & Joystick) --- */
+.map-nav-container {
+    position: absolute;
+    top: 78px;
+    right: 30px;
+    width: 96px; /* Exactly matches joystick diameter & centered under .kontrol-kanan */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 45;
+    user-select: none;
+    -webkit-user-select: none;
+    pointer-events: auto;
+}
+
+.map-nav-zoom-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 96px;
+    margin-bottom: 8px;
+}
+
+.map-nav-btn {
+    background: transparent;
+    border: none;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.zoom-btn {
+    width: 40px;
+    height: 40px;
+    transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.zoom-btn img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.45));
+    transition: filter 0.15s ease, transform 0.15s ease;
+}
+
+.zoom-btn:hover img {
+    transform: scale(1.15);
+    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.9)) drop-shadow(0 2px 5px rgba(0, 0, 0, 0.5));
+}
+
+.zoom-btn:active img {
+    transform: scale(0.92);
+}
+
+.map-nav-joystick-wrap {
+    position: relative;
+    width: 96px;
+    height: 96px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    touch-action: none;
+}
+
+.joystick-base-img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.45));
+}
+
+.nav-arrow-btn {
+    position: absolute;
+    background: transparent;
+    border: none;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 5;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.nav-arrow-btn img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
+    transition: transform 0.12s ease, filter 0.12s ease;
+}
+
+/* Coordinates calculated exactly from original Inkscape SVG source */
+.nav-arrow-up {
+    left: 34.8%;
+    width: 30.4%;
+    top: 4.8%;
+    height: 24.2%;
+}
+
+.nav-arrow-down {
+    left: 34.8%;
+    width: 30.4%;
+    top: 71.0%;
+    height: 24.2%;
+}
+
+.nav-arrow-left {
+    left: 4.8%;
+    width: 24.2%;
+    top: 34.8%;
+    height: 30.4%;
+}
+
+.nav-arrow-right {
+    left: 71.0%;
+    width: 24.2%;
+    top: 34.8%;
+    height: 30.4%;
+}
+
+.nav-arrow-btn:hover img {
+    transform: scale(1.2);
+    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.95)) drop-shadow(0 2px 5px rgba(0, 0, 0, 0.5));
+}
+
+.nav-arrow-btn:active img,
+.nav-arrow-btn.active img {
+    transform: scale(0.9);
+    filter: brightness(1.3) drop-shadow(0 0 10px #ffffff);
+}
+
+.joystick-center-target {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 32%;
+    height: 32%;
+    margin-left: -16%;
+    margin-top: -16%;
+    border-radius: 50%;
+    cursor: grab;
+    z-index: 6;
+    touch-action: none;
+    background: transparent;
+    transition: box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.joystick-center-target:hover {
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+}
+
+.joystick-center-target.dragging {
+    cursor: grabbing;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.1) 70%, transparent 100%);
+    box-shadow: 0 0 14px rgba(255, 255, 255, 0.95);
+}
+
+@media (max-width: 768px), (max-height: 500px) {
+    .map-nav-container {
+        top: 65px;
+        right: 24px;
+        width: 80px;
+    }
+    .map-nav-zoom-row {
+        width: 80px;
+        margin-bottom: 6px;
+    }
+    .zoom-btn {
+        width: 34px;
+        height: 34px;
+    }
+    .map-nav-joystick-wrap {
+        width: 80px;
+        height: 80px;
+    }
+}
+
 /* --- ASSET EDITOR --- */
 #map-inner-wrap {
     position: absolute;

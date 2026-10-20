@@ -746,7 +746,247 @@ document.addEventListener('DOMContentLoaded', () => {
         scheduleRender();
     }
 
-    // Call loadMap to start fetching the SVG in the background
+    // --- MAP NAVIGATION CONTROLS (Zoom Buttons & Joystick) ---
+    function initMapNavigation() {
+        const btnZoomIn = document.getElementById('btn-zoom-in');
+        const btnZoomOut = document.getElementById('btn-zoom-out');
+        const btnNavUp = document.getElementById('btn-nav-up');
+        const btnNavDown = document.getElementById('btn-nav-down');
+        const btnNavLeft = document.getElementById('btn-nav-left');
+        const btnNavRight = document.getElementById('btn-nav-right');
+        const joystickWrap = document.getElementById('map-nav-joystick');
+        const joystickKnob = document.getElementById('joystick-knob');
+
+        if (!btnZoomIn) return;
+
+        // Smooth Zoom Button Logic
+        let zoomTransitionTimer = null;
+        function triggerZoom(multiplier) {
+            if (!svgMap) return;
+            const wrapRect = mapWrap.getBoundingClientRect();
+            const cx = wrapRect.left + wrapRect.width / 2;
+            const cy = wrapRect.top + wrapRect.height / 2;
+
+            if (zoomTransitionTimer) clearTimeout(zoomTransitionTimer);
+            svgMap.style.transition = 'transform 0.22s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+            zoomAt(multiplier, cx, cy);
+            zoomTransitionTimer = setTimeout(() => {
+                if (svgMap) svgMap.style.transition = 'none';
+            }, 230);
+        }
+
+        btnZoomIn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            triggerZoom(1.3);
+        });
+
+        btnZoomOut.addEventListener('click', (e) => {
+            e.stopPropagation();
+            triggerZoom(0.77);
+        });
+
+        // Directional Pan (Continuous holding + single click)
+        const PAN_SPEED = 14;
+        let panRAF = null;
+        let currentPanDir = { x: 0, y: 0 };
+
+        function startPan(dirX, dirY) {
+            if (!svgMap) return;
+
+            // If scale is <= 1.0 (fitted map), auto-zoom towards the requested direction
+            if (scale <= 1.0) {
+                const wrapRect = mapWrap.getBoundingClientRect();
+                const focusX = dirX > 0 ? wrapRect.width * 0.25 : (dirX < 0 ? wrapRect.width * 0.75 : wrapRect.width * 0.5);
+                const focusY = dirY > 0 ? wrapRect.height * 0.25 : (dirY < 0 ? wrapRect.height * 0.75 : wrapRect.height * 0.5);
+                
+                svgMap.style.transition = 'transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+                zoomAt(1.5, wrapRect.left + focusX, wrapRect.top + focusY);
+                setTimeout(() => {
+                    if (svgMap) svgMap.style.transition = 'none';
+                }, 310);
+                return;
+            }
+
+            currentPanDir = { x: dirX, y: dirY };
+            if (panRAF) return;
+
+            svgMap.style.transition = 'none';
+            function step() {
+                if (currentPanDir.x === 0 && currentPanDir.y === 0) {
+                    panRAF = null;
+                    return;
+                }
+                x += currentPanDir.x * PAN_SPEED;
+                y += currentPanDir.y * PAN_SPEED;
+                renderMap();
+                panRAF = requestAnimationFrame(step);
+            }
+            panRAF = requestAnimationFrame(step);
+        }
+
+        function stopPan() {
+            currentPanDir = { x: 0, y: 0 };
+            if (panRAF) {
+                cancelAnimationFrame(panRAF);
+                panRAF = null;
+            }
+        }
+
+        function bindArrowButton(btn, dirX, dirY) {
+            if (!btn) return;
+            let pressStartTime = 0;
+            let isHolding = false;
+
+            const handleDown = (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                pressStartTime = performance.now();
+                isHolding = true;
+                btn.classList.add('active');
+                startPan(dirX, dirY);
+            };
+
+            const handleUp = (e) => {
+                if (!isHolding) return;
+                isHolding = false;
+                btn.classList.remove('active');
+                const pressDuration = performance.now() - pressStartTime;
+                stopPan();
+
+                // Bonus nudge for single quick taps if scale > 1
+                if (pressDuration < 200 && scale > 1.0) {
+                    svgMap.style.transition = 'transform 0.14s ease-out';
+                    x += dirX * 70;
+                    y += dirY * 70;
+                    renderMap();
+                    setTimeout(() => {
+                        if (svgMap) svgMap.style.transition = 'none';
+                    }, 150);
+                }
+            };
+
+            btn.addEventListener('pointerdown', handleDown);
+            btn.addEventListener('pointerup', handleUp);
+            btn.addEventListener('pointerleave', handleUp);
+            btn.addEventListener('pointercancel', handleUp);
+        }
+
+        // Up: viewpoint moves up -> map moves down (+Y)
+        // Down: viewpoint moves down -> map moves up (-Y)
+        // Left: viewpoint moves left -> map moves right (+X)
+        // Right: viewpoint moves right -> map moves left (-X)
+        bindArrowButton(btnNavUp, 0, 1);
+        bindArrowButton(btnNavDown, 0, -1);
+        bindArrowButton(btnNavLeft, 1, 0);
+        bindArrowButton(btnNavRight, -1, 0);
+
+        // Analog Joystick Touch / Drag
+        if (joystickWrap && joystickKnob) {
+            let isDraggingJoy = false;
+            let joyCenter = { x: 0, y: 0 };
+            const maxRadius = 30; // max knob displacement
+
+            function onJoyDown(e) {
+                // If clicked an arrow button, let arrow button handle it
+                if (e.target.closest('.nav-arrow-btn')) return;
+                e.preventDefault();
+                e.stopPropagation();
+
+                isDraggingJoy = true;
+                joystickKnob.classList.add('dragging');
+                const rect = joystickWrap.getBoundingClientRect();
+                joyCenter = {
+                    x: rect.left + rect.width / 2,
+                    y: rect.top + rect.height / 2
+                };
+
+                if (scale <= 1.0) {
+                    triggerZoom(1.4);
+                }
+
+                onJoyMove(e);
+            }
+
+            function onJoyMove(e) {
+                if (!isDraggingJoy) return;
+                const dx = e.clientX - joyCenter.x;
+                const dy = e.clientY - joyCenter.y;
+                const dist = Math.hypot(dx, dy);
+                const angle = Math.atan2(dy, dx);
+
+                const clampedDist = Math.min(dist, maxRadius);
+                const knobX = Math.cos(angle) * clampedDist;
+                const knobY = Math.sin(angle) * clampedDist;
+
+                joystickKnob.style.transform = `translate(${knobX}px, ${knobY}px)`;
+
+                // Joystick directional movement:
+                // Dragging right (dx > 0) -> view moves right -> map translates left (-X)
+                // Dragging down (dy > 0) -> view moves down -> map translates up (-Y)
+                const speedMultiplier = (clampedDist / maxRadius);
+                currentPanDir = {
+                    x: -Math.cos(angle) * speedMultiplier,
+                    y: -Math.sin(angle) * speedMultiplier
+                };
+
+                if (!panRAF) {
+                    svgMap.style.transition = 'none';
+                    function step() {
+                        if (!isDraggingJoy && currentPanDir.x === 0 && currentPanDir.y === 0) {
+                            panRAF = null;
+                            return;
+                        }
+                        x += currentPanDir.x * PAN_SPEED;
+                        y += currentPanDir.y * PAN_SPEED;
+                        renderMap();
+                        panRAF = requestAnimationFrame(step);
+                    }
+                    panRAF = requestAnimationFrame(step);
+                }
+            }
+
+            function onJoyUp() {
+                if (!isDraggingJoy) return;
+                isDraggingJoy = false;
+                joystickKnob.classList.remove('dragging');
+                joystickKnob.style.transition = 'transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+                joystickKnob.style.transform = 'translate(0px, 0px)';
+                setTimeout(() => {
+                    if (joystickKnob) joystickKnob.style.transition = 'none';
+                }, 210);
+                stopPan();
+            }
+
+            joystickWrap.addEventListener('pointerdown', onJoyDown);
+            window.addEventListener('pointermove', onJoyMove);
+            window.addEventListener('pointerup', onJoyUp);
+            window.addEventListener('pointercancel', onJoyUp);
+        }
+
+        // Keyboard arrow shortcuts (for desktop usability)
+        window.addEventListener('keydown', (e) => {
+            // Only active on map page
+            if (mapPage.classList.contains('hidden')) return;
+            if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', '+', '=', '-'].includes(e.key)) {
+                e.preventDefault();
+            }
+            if (e.key === 'ArrowUp') startPan(0, 1);
+            else if (e.key === 'ArrowDown') startPan(0, -1);
+            else if (e.key === 'ArrowLeft') startPan(1, 0);
+            else if (e.key === 'ArrowRight') startPan(-1, 0);
+            else if (e.key === '+' || e.key === '=') triggerZoom(1.25);
+            else if (e.key === '-') triggerZoom(0.8);
+        });
+
+        window.addEventListener('keyup', (e) => {
+            if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+                stopPan();
+            }
+        });
+    }
+
+    // Call loadMap and init navigation
     loadMap();
+    initMapNavigation();
 
 });
