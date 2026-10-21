@@ -245,6 +245,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let isGameStarted = false;
     let skor = 0;
     let currentRoundIndex = 0;
+    let isProcessingAnswer = false;
     
     const soalList = [
         { id: 'aceh', text: 'Coba tebak siapa yang bersembunyi di serambi Mekkah!', target: ['aceh', 'aceh-rumah', 'aceh-ruma'], popText: 'Halo! Aku Cut dari Aceh. Ini pakaian adatku namanya Ulee Balang. Lihat hiasan di kepalaku dan pakaian megah ini? Motif dan keindahannya melambangkan kebesaran, keberanian, serta ketinggian martabat masyarakat Aceh!' },
@@ -304,6 +305,7 @@ document.addEventListener('DOMContentLoaded', () => {
             winGame();
             return;
         }
+        isProcessingAnswer = false; // Reset agar siap menerima klik untuk soal yang baru
         const currentSoal = soalList[currentRoundIndex];
         
         // Update teks soal di wadah soal pojok kiri bawah
@@ -354,6 +356,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (!isGameStarted) {
             isGameStarted = true;
+            btnMulaiPetualangan.disabled = true;
             storyPage.classList.add('hidden');
             mapPage.classList.remove('hidden');
             
@@ -376,6 +379,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log("Petualangan dimulai!");
         } else {
             // Logika tombol "Lanjut" setelah jawaban benar
+            btnMulaiPetualangan.disabled = true; // Cegah double-click pada tombol Lanjut
             ceritaOverlay.classList.add('hidden');
             audioBenar.pause();
             audioBenar.currentTime = 0;
@@ -502,6 +506,9 @@ document.addEventListener('DOMContentLoaded', () => {
         svgMap.addEventListener('click', (event) => {
             if(moved) return;
 
+            // Cegah klik ganda atau klik saat sedang memproses jawaban benar
+            if(isProcessingAnswer) return;
+
             let target = event.target;
             while(target && target !== svgMap) {
                 if(target.classList && target.classList.contains('map-clickable')) {
@@ -511,6 +518,9 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             if(!target || target === svgMap) return;
+
+            // Abaikan jika target sudah selesai terjawab pada ronde sebelumnya
+            if(target.classList.contains('map-solved')) return;
 
             svgMap.querySelectorAll('.map-clickable.selected').forEach(el => el.classList.remove('selected'));
             target.classList.add('selected');
@@ -525,10 +535,27 @@ document.addEventListener('DOMContentLoaded', () => {
             audioSoal.pause(); // Hentikan audio soal jika masih bermain
             
             if(currentSoal.target.includes(targetId) || currentSoal.target.includes(targetId.replace('-ruma', '-rumah'))) {
-                // BENAR
+                // BENAR - LANGSUNG KUNCI AGAR TIDAK BISA DI-KLIK LEBIH DARI SEKALI
+                isProcessingAnswer = true;
+
                 audioSfxCorrect.play().catch(e => console.log(e));
-                skor++;
+                skor = Math.min(skor + 1, soalList.length);
                 updateHudSkor();
+
+                // Nonaktifkan semua elemen target soal ini agar tidak bisa diklik lagi selamanya
+                currentSoal.target.forEach(name => {
+                    const selector = `[id="${name}"], [inkscape\\:label="${name}"]`;
+                    svgMap.querySelectorAll(selector).forEach(el => {
+                        el.classList.remove('map-clickable', 'selected');
+                        el.classList.add('map-solved');
+                        el.style.pointerEvents = 'none';
+                        el.style.cursor = 'default';
+                    });
+                });
+                target.classList.remove('map-clickable', 'selected');
+                target.classList.add('map-solved');
+                target.style.pointerEvents = 'none';
+                target.style.cursor = 'default';
                 
                 // Munculkan ikon anak di atas elemen yang diklik (di dalam SVG)
                 try {
@@ -544,12 +571,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     
                     // Buat wrapper group untuk menahan transform SVG ikon agar tidak tertimpa animasi CSS
                     const wrapperGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                    wrapperGroup.style.pointerEvents = 'none';
                     const transform = anchorElement.getAttribute('transform');
                     if (transform) {
                         wrapperGroup.setAttribute('transform', transform);
                     }
                     
                     const childIcon = document.createElementNS('http://www.w3.org/2000/svg', 'image');
+                    childIcon.style.pointerEvents = 'none';
                     childIcon.setAttribute('href', `Asset/images/ikon-${currentSoal.id}.png`);
                     childIcon.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', `Asset/images/ikon-${currentSoal.id}.png`);
                     
@@ -584,6 +613,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         popupElement.style.backgroundImage = ""; // Let CSS handle it
                     }
                     
+                    ceritaKarakter.className = `karakter-kiri karakter-${currentSoal.id}`;
                     ceritaKarakter.src = `Asset/images/pop-${currentSoal.id}.png`;
                     ceritaKarakter.classList.remove('hidden'); // Show character
                     ceritaTitle.classList.remove('hidden');

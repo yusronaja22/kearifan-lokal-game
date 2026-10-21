@@ -360,11 +360,21 @@ body, html {
 
 .cerita-popup.mode-ketemu .karakter-kiri {
     display: block; /* Show character in ketemu mode */
-    bottom: 10%; /* Beri jarak bawah */
-    left: 8% !important; /* Geser drastis ke kanan agar benar-benar masuk area putih */
-    width: 25% !important; /* Perkecil sedikit agar tidak menabrak batas kiri-kanan putih */
-    height: 80%; /* Agar kaki tidak kepotong kotak */
-    transform: none; /* Hapus translate agar tidak bergeser aneh jika gambar memiliki ruang kosong */
+    bottom: 8%; /* Beri jarak bawah */
+    left: 4.5% !important;
+    width: 33% !important;
+    height: 84%; /* Agar proporsional dan tidak terpotong */
+    transform: none;
+    object-fit: contain;
+}
+
+/* Penyesuaian khusus karakter Toraja yang memiliki pose merentangkan tangan agar tubuh dan kepalanya proporsional dengan karakter lain */
+.cerita-popup.mode-ketemu .karakter-kiri.karakter-toraja,
+.cerita-popup.mode-ketemu img[src*="pop-toraja"] {
+    width: 36.5% !important;
+    left: 2.8% !important;
+    height: 86% !important;
+    bottom: 7% !important;
 }
 
 .cerita-popup.mode-ketemu .cerita-content {
@@ -609,6 +619,15 @@ body, html {
 
 .map-clickable.selected {
     filter: brightness(1.3);
+}
+
+.map-solved {
+    cursor: default !important;
+    pointer-events: none !important;
+}
+
+.map-solved:hover {
+    filter: none !important;
 }
 
 /* --- MAP NAVIGATION CONTROLS (Zoom & Joystick) --- */
