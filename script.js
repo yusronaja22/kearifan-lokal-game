@@ -462,6 +462,11 @@ document.addEventListener('DOMContentLoaded', () => {
         renderMapRAF = requestAnimationFrame(renderMap);
     }
 
+    // Tangani perubahan ukuran layar (resize / rotasi layar)
+    window.addEventListener('resize', () => {
+        scheduleRender();
+    });
+
     function zoomAt(zoomMultiplier, centerX, centerY) {
         if(!svgMap) return;
         const wrapRect = mapWrap.getBoundingClientRect();
@@ -1019,4 +1024,14 @@ document.addEventListener('DOMContentLoaded', () => {
     loadMap();
     initMapNavigation();
 
+    // Query parameter support untuk pengujian langsung (contoh: ?page=ending)
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('page') === 'ending') {
+        landingPage.classList.add('hidden');
+        storyPage.classList.add('hidden');
+        mapPage.classList.add('hidden');
+        endingPage.classList.remove('hidden');
+    } else if (urlParams.get('page') === 'story') {
+        startGame();
+    }
 });
