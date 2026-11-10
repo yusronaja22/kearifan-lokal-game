@@ -319,7 +319,7 @@ body, html {
 }
 
 .cerita-popup {
-    background-image: url('Asset/images/popup-end.svg');
+    background-image: url('Asset/images/popup-end.svg?v=2');
     background-size: 100% 100%;
     background-position: center;
     background-repeat: no-repeat;
@@ -961,7 +961,7 @@ body, html {
 .char-toraja { bottom: 0vh; right: 3.5vw; height: 46vh; z-index: 13; }
 
 .ending-popup {
-    background-image: url('Asset/images/popup-end.svg');
+    background-image: url('Asset/images/popup-end.svg?v=2');
     background-size: 100% 100%;
     background-position: center;
     background-repeat: no-repeat;
