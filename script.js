@@ -2,12 +2,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const landingPage = document.getElementById('landing-page');
     const gamePage = document.getElementById('game-page');
     const btnMulai = document.querySelector('.btn-mulai');
-    
+
     // Popup Elements
     const popupFullscreen = document.getElementById('popup-fullscreen');
     const btnYa = document.getElementById('btn-ya');
     const btnTidak = document.getElementById('btn-tidak');
-    
+
     // Header Controls
     const btnMusic = document.getElementById('btn-music');
     const musicIcon = document.getElementById('music-icon');
@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnMulaiPetualangan = document.getElementById('btn-mulai-petualangan');
     const audioPembuka = document.getElementById('audio-pembuka');
     const audioPetunjuk = document.getElementById('audio-petunjuk');
-    
+
     // Game Logic Elements & Audio
     const textSkor = document.getElementById('text-skor');
     const audioSfxCorrect = document.getElementById('audio-sfx-correct');
@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const audioPenutup = document.getElementById('audio-penutup');
     const audioSoal = document.getElementById('audio-soal');
     const audioBenar = document.getElementById('audio-benar');
-    
+
     const endingPage = document.getElementById('ending-page');
     // Refleksi (Textarea removed)
     const btnKeluar = document.getElementById('btn-keluar');
@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let isMusicPlaying = true;
     let typeWriterTimeout = null;
-    
+
     const textPembuka = "Halo, teman-teman! Hari ini kita akan bermain Petak Umpet Nusantara. Sambil mencari teman-teman kita yang bersembunyi, kita juga akan belajar mengenal berbagai pakaian adat dari seluruh Indonesia beserta ciri khas dan filosofinya. Yuk, kita mulai petualangannya";
     const textPetunjuk = "Perhatikan petunjuk berupa suara atau tulisan yang muncul untuk mencari tahu pakaian adat dari daerah mana yang sedang bersembunyi! Cari dan Klik ikon di peta yang sesuai dengan petunjuk tersebut. Jawaban yang benar akan menambah skormu!";
 
@@ -118,10 +118,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (typeWriterTimeout) {
             clearTimeout(typeWriterTimeout);
         }
-        
+
         element.textContent = '';
         let i = 0;
-        
+
         function type() {
             if (i < text.length) {
                 element.textContent += text.charAt(i);
@@ -143,7 +143,7 @@ document.addEventListener('DOMContentLoaded', () => {
             popupElement.classList.remove('mode-ketemu');
             popupElement.style.backgroundImage = "url('Asset/images/popup-end.svg?v=2')";
         }
-        
+
         // Hide character explicitly during story sequence
         if (ceritaKarakter) {
             ceritaKarakter.classList.add('hidden');
@@ -179,7 +179,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (currentSlide === 1 && !isGameStarted) {
             btnMulaiPetualangan.classList.remove('disabled');
             btnMulaiPetualangan.disabled = false;
-            
+
             // Hapus animasi hint pada dot ke-2 jika user sudah mengkliknya
             if (dots[1]) {
                 dots[1].classList.remove('dot-hint');
@@ -213,21 +213,21 @@ document.addEventListener('DOMContentLoaded', () => {
     function playStorySequence() {
         // Hentikan pengetikan jika sedang berjalan
         if (typeWriterTimeout) clearTimeout(typeWriterTimeout);
-        
+
         // Sembunyikan teks cerita biasa, langsung tampilkan carousel
         ceritaText.classList.add('hidden');
         ceritaTitle.classList.remove('hidden');
-        
+
         // Nonaktifkan tombol mulai sebelum petunjuk dibuka
         btnMulaiPetualangan.classList.add('disabled');
         btnMulaiPetualangan.disabled = true;
-        
+
         if (panduanCarousel) {
             panduanCarousel.classList.remove('hidden');
             currentSlide = 0;
             updateCarousel(); // Ini otomatis akan memainkan audioPembuka
         }
-        
+
         // Auto-advance ke petunjuk saat audio pembuka selesai
         audioPembuka.onended = () => {
             if (currentSlide === 0) {
@@ -246,7 +246,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let skor = 0;
     let currentRoundIndex = 0;
     let isProcessingAnswer = false;
-    
+
     const soalList = [
         { id: 'aceh', text: 'Coba tebak siapa yang bersembunyi di serambi Mekkah!', target: ['aceh', 'aceh-rumah', 'aceh-ruma', 'aceh-masjid'], popText: 'Halo! Aku Cut dari Aceh. Ini pakaian adatku namanya Ulee Balang. Lihat hiasan di kepalaku dan pakaian megah ini? Motif dan keindahannya melambangkan kebesaran, keberanian, serta ketinggian martabat masyarakat Aceh!' },
         { id: 'bali', text: 'Cari anak dengan udeng di pulau dewata sekarang', target: ['bali', 'bali-rumah'], popText: 'Halo! Aku Made dari Bali. Ini pakaian adatku, ya. Aku memakai Udeng di kepalaku dan kain Kamben ini. Biasanya kami memakai pakaian ini saat mengikuti upacara budaya di pura sebagai wujud syukur kepada Sang Pencipta!' },
@@ -260,7 +260,7 @@ document.addEventListener('DOMContentLoaded', () => {
     soalList.sort(() => Math.random() - 0.5);
 
 
-    
+
     function updateHudSkor() {
         const skorIcons = document.querySelectorAll('#skor-icons .skor-icon');
         for (let i = 0; i < skorIcons.length; i++) {
@@ -283,7 +283,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const steps = 20;
         const stepTime = duration / steps;
         const volumeStep = volumeDiff / steps;
-        
+
         let currentStep = 0;
         audioElement.fadeInterval = setInterval(() => {
             currentStep++;
@@ -291,7 +291,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (newVolume > 1) newVolume = 1;
             if (newVolume < 0) newVolume = 0;
             audioElement.volume = newVolume;
-            
+
             if (currentStep >= steps) {
                 audioElement.volume = targetVolume;
                 clearInterval(audioElement.fadeInterval);
@@ -307,13 +307,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         isProcessingAnswer = false; // Reset agar siap menerima klik untuk soal yang baru
         const currentSoal = soalList[currentRoundIndex];
-        
+
         // Update teks soal di wadah soal pojok kiri bawah
         const textSoalDisplay = document.getElementById('text-soal-display');
-        if(textSoalDisplay) {
+        if (textSoalDisplay) {
             textSoalDisplay.textContent = currentSoal.text;
         }
-        
+
         if (isMusicPlaying) {
             audioSfxNotif.play();
             audioSfxNotif.onended = () => {
@@ -330,7 +330,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function winGame() {
         audioBgmGame.pause();
         audioBgmGame.currentTime = 0;
-        
+
         // Play voice over penutup
         if (isMusicPlaying) {
             audioPenutup.currentTime = 0;
@@ -359,23 +359,23 @@ document.addEventListener('DOMContentLoaded', () => {
             btnMulaiPetualangan.disabled = true;
             storyPage.classList.add('hidden');
             mapPage.classList.remove('hidden');
-            
+
             audioPembuka.pause();
             audioPembuka.currentTime = 0;
             audioPembuka.onended = null;
-            
-            audioPetunjuk.pause(); 
-            audioPetunjuk.currentTime = 0; 
-            
+
+            audioPetunjuk.pause();
+            audioPetunjuk.currentTime = 0;
+
             // Siapkan UI untuk pop-up berikutnya
             mapPage.appendChild(ceritaOverlay);
             ceritaOverlay.classList.add('hidden');
             btnMulaiPetualangan.textContent = "Lanjut";
 
             updateHudSkor();
-            if(isMusicPlaying) audioBgmGame.play();
+            if (isMusicPlaying) audioBgmGame.play();
             playNextSoal();
-            
+
             console.log("Petualangan dimulai!");
         } else {
             // Logika tombol "Lanjut" setelah jawaban benar
@@ -385,7 +385,7 @@ document.addEventListener('DOMContentLoaded', () => {
             audioBenar.currentTime = 0;
             audioBenar.onended = null;
             fadeAudioVolume(audioBgmGame, 1.0, 100); // Cepat naikkan BGM kembali jika di-skip
-            
+
             currentRoundIndex++;
             playNextSoal();
         }
@@ -424,7 +424,7 @@ document.addEventListener('DOMContentLoaded', () => {
             .then(svgText => {
                 mapWrap.innerHTML = svgText;
                 svgMap = mapWrap.querySelector('svg');
-                if(svgMap) {
+                if (svgMap) {
                     initMapInteractive();
                 }
             })
@@ -434,8 +434,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let renderMapRAF = null;
 
     function renderMap() {
-        if(!svgMap) return;
-        
+        if (!svgMap) return;
+
         // Batasi zoom out (kembali ke tampilan awal penuh jika scale <= 1)
         if (scale <= 1.0) {
             scale = 1.0;
@@ -446,7 +446,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const wrapRect = mapWrap.getBoundingClientRect();
             const minX = wrapRect.width * (1 - scale);
             const minY = wrapRect.height * (1 - scale);
-            
+
             if (x > 0) x = 0;
             if (x < minX) x = minX;
             if (y > 0) y = 0;
@@ -468,9 +468,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     function zoomAt(zoomMultiplier, centerX, centerY) {
-        if(!svgMap) return;
+        if (!svgMap) return;
         const wrapRect = mapWrap.getBoundingClientRect();
-        
+
         let newScale = scale * zoomMultiplier;
         newScale = Math.min(Math.max(0.2, newScale), 8);
         const actualMultiplier = newScale / scale;
@@ -494,12 +494,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Setup clickable areas berdasarkan ID atau label dari SVG
         const clickableLabels = [
-            'aceh-rumah','aceh-ruma','aceh-masjid','g79','g77','g80','g78','gn-ac','ph-su',
-            'gajah','joglo','jawa-rumah','g90','g88','g31','g28','g89','orang-utan','dayak',
-            'dayak-rumah','g95','ph-d-2','g96','g59','g56','toraja','toraja-rumah','bird-2',
-            'g49','g50','g46','g48','bali','bali-rumah','g93','g39','honai','papua-rumah',
-            'g99','g98','bird-1','cend-1','g101','g71','g69','g68',
-            'aceh-karakter','jawa-karakter','bali-karakter','toraja-karakter','dayak-karakter','papua-karakter'
+            'aceh-rumah', 'aceh-ruma', 'aceh-masjid', 'g79', 'g77', 'g80', 'g78', 'gn-ac', 'ph-su',
+            'gajah', 'joglo', 'jawa-rumah', 'g90', 'g88', 'g31', 'g28', 'g89', 'orang-utan', 'dayak',
+            'dayak-rumah', 'g95', 'ph-d-2', 'g96', 'g59', 'g56', 'toraja', 'toraja-rumah', 'bird-2',
+            'g49', 'g50', 'g46', 'g48', 'bali', 'bali-rumah', 'g93', 'g39', 'honai', 'papua-rumah',
+            'g99', 'g98', 'bird-1', 'cend-1', 'g101', 'g71', 'g69', 'g68',
+            'aceh-karakter', 'jawa-karakter', 'bali-karakter', 'toraja-karakter', 'dayak-karakter', 'papua-karakter'
         ];
 
         clickableLabels.forEach(name => {
@@ -509,37 +509,37 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Click Event
         svgMap.addEventListener('click', (event) => {
-            if(moved) return;
+            if (moved) return;
 
             // Cegah klik ganda atau klik saat sedang memproses jawaban benar
-            if(isProcessingAnswer) return;
+            if (isProcessingAnswer) return;
 
             let target = event.target;
-            while(target && target !== svgMap) {
-                if(target.classList && target.classList.contains('map-clickable')) {
+            while (target && target !== svgMap) {
+                if (target.classList && target.classList.contains('map-clickable')) {
                     break;
                 }
                 target = target.parentElement;
             }
 
-            if(!target || target === svgMap) return;
+            if (!target || target === svgMap) return;
 
             // Abaikan jika target sudah selesai terjawab pada ronde sebelumnya
-            if(target.classList.contains('map-solved')) return;
+            if (target.classList.contains('map-solved')) return;
 
             svgMap.querySelectorAll('.map-clickable.selected').forEach(el => el.classList.remove('selected'));
             target.classList.add('selected');
-            
+
             const targetId = (target.getAttribute('inkscape:label') || target.getAttribute('id') || '').toLowerCase();
             console.log('Clicked target:', targetId);
 
             // Validasi Game Logic
-            if(currentRoundIndex >= soalList.length) return;
-            
+            if (currentRoundIndex >= soalList.length) return;
+
             const currentSoal = soalList[currentRoundIndex];
             audioSoal.pause(); // Hentikan audio soal jika masih bermain
-            
-            if(currentSoal.target.includes(targetId) || currentSoal.target.includes(targetId.replace('-ruma', '-rumah'))) {
+
+            if (currentSoal.target.includes(targetId) || currentSoal.target.includes(targetId.replace('-ruma', '-rumah'))) {
                 // BENAR - LANGSUNG KUNCI AGAR TIDAK BISA DI-KLIK LEBIH DARI SEKALI
                 isProcessingAnswer = true;
 
@@ -561,7 +561,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 target.classList.add('map-solved');
                 target.style.pointerEvents = 'none';
                 target.style.cursor = 'default';
-                
+
                 // Munculkan ikon anak di atas elemen yang diklik (di dalam SVG)
                 try {
                     let anchorElement = target;
@@ -575,7 +575,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
 
                     const bbox = anchorElement.getBBox();
-                    
+
                     // Buat wrapper group untuk menahan transform SVG ikon agar tidak tertimpa animasi CSS
                     const wrapperGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
                     wrapperGroup.style.pointerEvents = 'none';
@@ -583,55 +583,55 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (transform) {
                         wrapperGroup.setAttribute('transform', transform);
                     }
-                    
+
                     const childIcon = document.createElementNS('http://www.w3.org/2000/svg', 'image');
                     childIcon.style.pointerEvents = 'none';
                     childIcon.setAttribute('href', `Asset/images/ikon-${currentSoal.id}.png`);
                     childIcon.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', `Asset/images/ikon-${currentSoal.id}.png`);
-                    
+
                     // Posisi akhir ikon: Di samping kanan rumah
-                    const iconWidth = Math.max(bbox.width * 1.5, 60); 
+                    const iconWidth = Math.max(bbox.width * 1.5, 60);
                     const iconHeight = iconWidth;
                     childIcon.setAttribute('x', bbox.x + bbox.width - (iconWidth * 0.3)); // Mengintip dari kanan
                     childIcon.setAttribute('y', bbox.y + (bbox.height / 2) - (iconHeight / 2)); // Vertikal di tengah
                     childIcon.setAttribute('width', iconWidth);
                     childIcon.setAttribute('height', iconHeight);
-                    
+
                     childIcon.classList.add('muncul-animasi-samping'); // Animasi pop up ke samping
                     wrapperGroup.appendChild(childIcon);
-                    
+
                     // Sisipkan ikon TEPAT DI BELAKANG rumah
-                    if(anchorElement.parentNode) {
+                    if (anchorElement.parentNode) {
                         anchorElement.parentNode.insertBefore(wrapperGroup, anchorElement);
                     } else {
                         svgMap.insertBefore(wrapperGroup, svgMap.firstChild);
                     }
-                } catch(e) {
+                } catch (e) {
                     console.error("Gagal menaruh ikon:", e);
                 }
-                
+
                 setTimeout(() => {
                     ceritaOverlay.classList.remove('hidden');
-                    
+
                     // Ganti background popup ke popup-ketemu.svg
                     const popupElement = document.querySelector('.cerita-popup');
                     if (popupElement) {
                         popupElement.classList.add('mode-ketemu');
                         popupElement.style.backgroundImage = ""; // Let CSS handle it
                     }
-                    
+
                     ceritaKarakter.className = `karakter-kiri karakter-${currentSoal.id}`;
                     ceritaKarakter.src = `Asset/images/pop-${currentSoal.id}.png`;
                     ceritaKarakter.classList.remove('hidden'); // Show character
                     ceritaTitle.classList.remove('hidden');
                     ceritaTitle.textContent = "Berhasil!";
-                    
+
                     // Sembunyikan carousel jika sebelumnya dipakai
                     const panduanCarousel = document.getElementById('panduan-carousel');
                     if (panduanCarousel) {
                         panduanCarousel.classList.add('hidden');
                     }
-                    
+
                     ceritaText.classList.remove('hidden');
                     ceritaText.innerHTML = currentSoal.popText;
                     btnMulaiPetualangan.innerHTML = "<img src='Asset/images/next.svg' alt='Lanjut' style='height: 45px;'>"; // Use next.svg
@@ -639,7 +639,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     btnMulaiPetualangan.style.display = 'block';
                     btnMulaiPetualangan.classList.remove('disabled');
                     btnMulaiPetualangan.disabled = false;
-                    
+
                     document.getElementById('cerita-overlay').classList.remove('hidden');
                     audioBenar.src = `Asset/audio/benar-${currentSoal.id}.mp3`;
                     if (isMusicPlaying) {
@@ -652,7 +652,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         }
                     };
                 }, 600);
-                
+
             } else {
                 // SALAH (jawaban kosong / objek lain)
                 audioSfxWrong.play().catch(e => console.log(e));
@@ -671,15 +671,15 @@ document.addEventListener('DOMContentLoaded', () => {
             return Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY);
         }
         function getMidpoint(a, b) {
-            return { x: (a.clientX + b.clientX)/2, y: (a.clientY + b.clientY)/2 };
+            return { x: (a.clientX + b.clientX) / 2, y: (a.clientY + b.clientY) / 2 };
         }
 
         mapWrap.addEventListener('pointerdown', event => {
-            if(event.pointerType === 'mouse' && event.button !== 0) return;
+            if (event.pointerType === 'mouse' && event.button !== 0) return;
             activePointers.set(event.pointerId, event);
             // try { mapWrap.setPointerCapture(event.pointerId); } catch(e) {}
 
-            if(activePointers.size >= 2) {
+            if (activePointers.size >= 2) {
                 const pts = [...activePointers.values()];
                 const mid = getMidpoint(pts[0], pts[1]);
                 pinchStartDist = Math.max(1, getDistance(pts[0], pts[1]));
@@ -704,17 +704,17 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         mapWrap.addEventListener('pointermove', event => {
-            if(!activePointers.has(event.pointerId)) return;
+            if (!activePointers.has(event.pointerId)) return;
             activePointers.set(event.pointerId, event);
 
-            if(activePointers.size >= 2) {
+            if (activePointers.size >= 2) {
                 const pts = [...activePointers.values()];
                 const mid = getMidpoint(pts[0], pts[1]);
                 const d = Math.max(1, getDistance(pts[0], pts[1]));
-                
+
                 let newScale = pinchStartScale * (d / pinchStartDist);
                 newScale = Math.min(8, Math.max(0.2, newScale));
-                
+
                 const rect = svgMap.getBoundingClientRect();
                 const startPx = pinchMidX - rect.left;
                 const startPy = pinchMidY - rect.top;
@@ -725,17 +725,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 x = newPx - (startPx - pinchMapX) * ratio + (mid.x - pinchMidX);
                 y = newPy - (startPy - pinchMapY) * ratio + (mid.y - pinchMidY);
                 scale = newScale;
-                
+
                 scheduleRender();
                 return;
             }
 
-            if(gestureMode !== 'pan' || !dragging) return;
-            
+            if (gestureMode !== 'pan' || !dragging) return;
+
             const dx = event.clientX - startX;
             const dy = event.clientY - startY;
-            if(Math.abs(dx) > DRAG_THRESHOLD || Math.abs(dy) > DRAG_THRESHOLD) moved = true;
-            
+            if (Math.abs(dx) > DRAG_THRESHOLD || Math.abs(dy) > DRAG_THRESHOLD) moved = true;
+
             x = startMapX + dx;
             y = startMapY + dy;
             scheduleRender();
@@ -745,7 +745,7 @@ document.addEventListener('DOMContentLoaded', () => {
             activePointers.delete(event.pointerId);
             // try { mapWrap.releasePointerCapture(event.pointerId); } catch(e) {}
 
-            if(activePointers.size === 0) {
+            if (activePointers.size === 0) {
                 dragging = false;
                 mapWrap.classList.remove('dragging');
                 setTimeout(() => { moved = false; gestureMode = 'none'; }, 0);
@@ -768,12 +768,12 @@ document.addEventListener('DOMContentLoaded', () => {
         let wheelTimeout;
         mapWrap.addEventListener('wheel', event => {
             event.preventDefault();
-            
+
             // Berikan transisi halus saat menggunakan scroll wheel
             svgMap.style.transition = 'transform 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
             clearTimeout(wheelTimeout);
             wheelTimeout = setTimeout(() => {
-                if(svgMap) svgMap.style.transition = 'none';
+                if (svgMap) svgMap.style.transition = 'none';
             }, 150);
 
             // Menggunakan pengali zoom yang lebih halus (1.15) daripada langsung meloncat jauh
@@ -835,7 +835,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const wrapRect = mapWrap.getBoundingClientRect();
                 const focusX = dirX > 0 ? wrapRect.width * 0.25 : (dirX < 0 ? wrapRect.width * 0.75 : wrapRect.width * 0.5);
                 const focusY = dirY > 0 ? wrapRect.height * 0.25 : (dirY < 0 ? wrapRect.height * 0.75 : wrapRect.height * 0.5);
-                
+
                 svgMap.style.transition = 'transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
                 zoomAt(1.5, wrapRect.left + focusX, wrapRect.top + focusY);
                 setTimeout(() => {
