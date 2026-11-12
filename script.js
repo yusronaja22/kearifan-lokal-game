@@ -417,8 +417,17 @@ document.addEventListener('DOMContentLoaded', () => {
     let moved = false;
     const DRAG_THRESHOLD = 5;
 
-    // Load SVG Map
+    // Load SVG Map (Mendukung pembukaan langsung via double click / file://)
     function loadMap() {
+        if (window.MAP_SVG_DATA) {
+            mapWrap.innerHTML = window.MAP_SVG_DATA;
+            svgMap = mapWrap.querySelector('svg');
+            if (svgMap) {
+                initMapInteractive();
+            }
+            return;
+        }
+
         fetch('Asset/images/map-dan-ikon-colored.svg')
             .then(response => response.text())
             .then(svgText => {
